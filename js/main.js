@@ -517,7 +517,7 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
     if (e.ctrlKey) return;                       // zoom navigateur
     if (document.body.classList.contains('modal-locked')) return;
     // les rangées défilantes (témoignages, réalisations) gardent leur molette horizontale
-    if (e.target.closest && e.target.closest('.reviews-track, .project-track') && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    if (e.target.closest && e.target.closest('.project-track') && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     e.preventDefault();
     var now = Date.now();
     if (animating || now - lastWheel < 60) { lastWheel = now; return; }
@@ -534,9 +534,38 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
   });
 })();
 
+// ---------------------------------------------------------------------------
+// Témoignages : une citation à la fois, points de navigation, rotation automatique
+(function () {
+  var slider = document.querySelector('.testimonial-slider');
+  if (!slider) return;
+  var slides = Array.prototype.slice.call(slider.querySelectorAll('.testimonial'));
+  var dots = Array.prototype.slice.call(slider.querySelectorAll('.testimonial-dots button'));
+  var current = 0, timer = null;
+  function show(i) {
+    current = (i + slides.length) % slides.length;
+    slides.forEach(function (s, k) { s.classList.toggle('is-active', k === current); });
+    dots.forEach(function (d, k) { d.setAttribute('aria-selected', k === current ? 'true' : 'false'); });
+  }
+  function restart() {
+    clearInterval(timer);
+    timer = setInterval(function () { show(current + 1); }, 9000);
+  }
+  dots.forEach(function (d, k) {
+    d.addEventListener('click', function () { show(k); restart(); });
+    d.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { show(current + 1); dots[current].focus(); restart(); }
+      if (e.key === 'ArrowLeft') { show(current - 1); dots[current].focus(); restart(); }
+    });
+  });
+  slider.addEventListener('mouseenter', function () { clearInterval(timer); });
+  slider.addEventListener('mouseleave', restart);
+  restart();
+})();
+
 // Scroll-reveal for sections and cards
 var revealTargets = document.querySelectorAll(
-  '.section h2, .card, .pillar, .review, .project-card, .roadmap-heading, .step-card, .logo-col, .clients-copy, .stat-card'
+  '.section h2, .card, .pillar, .testimonial-slider, .project-card, .roadmap-heading, .step-card, .logo-col, .clients-copy, .stat-card'
 );
 revealTargets.forEach(function (el) { el.classList.add('reveal'); });
 
