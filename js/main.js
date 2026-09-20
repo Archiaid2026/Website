@@ -415,8 +415,9 @@ function buildInfographic(container) {
     lines.forEach(function (line, li) {
       var offsetIndex = (li - (n - 1) / 2);            // -0.5 / +0.5 pour deux lignes, 0 pour une
       var r = clockwise ? rm + (-offsetIndex) * lineGap * 2 : rm + offsetIndex * lineGap * 2;
-      // décalage de la ligne de base pour centrer verticalement le texte sur l'arc
-      var baseline = clockwise ? fontSize * 0.35 : -fontSize * 0.35;
+      // décalage de la ligne de base pour centrer verticalement le texte sur l'arc :
+      // dy positif pousse toujours les glyphes vers leur "bas", donc vers le centre du corps de texte
+      var baseline = fontSize * 0.3;
       var pid = 'arc-' + groupKey + '-' + idx + '-' + li;
       defs.appendChild(svgEl('path', { id: pid, d: arcPath(cx, cy, r, a1, a2, clockwise), fill: 'none' }));
       var text = svgEl('text', { class: 'segment-label', 'font-size': fontSize, dy: baseline });
