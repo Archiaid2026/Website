@@ -255,22 +255,49 @@ var SERVICE_TEXTS = {
   }
 };
 
+
+// Libellés courts écrits sur les arcs (une entrée par ligne)
+var ARC_LABELS = {
+  fr: {
+    'crm': ['CRM'], 'gestion-projet': ['Gestion', 'de projet'], 'erp': ['ERP'], 'partage-fichiers': ['Partage', 'de Fichiers'],
+    'bep': ['Développement', 'BEP'], 'collaboration-nuage': ['Collaboration', 'dans le nuage'], 'planification-4d': ['Planification', '4D'],
+    'detection-conflits': ['Détection', 'des conflits BIM'], 'coordination-bim': ['Coordination', 'BIM'], 'cycle-de-vie': ['Analyse du', 'cycle de vie'],
+    'jumeau-numerique': ['Jumeau', 'numérique'],
+    'surveillance-site': ['Surveillance', 'du site'], 'timelapse': ['Timelapse et', 'suivi de projet'], 'ia-sst': ['IA SST'], 'internet-site': ['Internet', 'sur site'],
+    'robotique': ['Solutions', 'robotiques'], 'capteurs': ['Solutions', 'de capteurs'], 'nuage-points': ['Nuage', 'de points']
+  },
+  en: {
+    'crm': ['CRM'], 'gestion-projet': ['Project', 'Management'], 'erp': ['ERP'], 'partage-fichiers': ['File', 'Sharing'],
+    'bep': ['BEP', 'Development'], 'collaboration-nuage': ['Cloud', 'Collaboration'], 'planification-4d': ['4D', 'Planning'],
+    'detection-conflits': ['Clash', 'Detection'], 'coordination-bim': ['BIM', 'Coordination'], 'cycle-de-vie': ['Life Cycle', 'Analysis'],
+    'jumeau-numerique': ['Digital', 'Twin'],
+    'surveillance-site': ['Site', 'Monitoring'], 'timelapse': ['Timelapse &', 'Project Tracking'], 'ia-sst': ['AI Safety'], 'internet-site': ['On-Site', 'Internet'],
+    'robotique': ['Robotic', 'Solutions'], 'capteurs': ['Sensor', 'Solutions'], 'nuage-points': ['Point', 'Cloud']
+  }
+};
+
 function polar(cx, cy, r, deg) {
   var t = deg * Math.PI / 180;
   return [cx + r * Math.cos(t), cy + r * Math.sin(t)];
 }
+function fmt(pt) { return pt[0].toFixed(2) + ',' + pt[1].toFixed(2); }
 
-// Secteur annulaire de a1 à a2 (sens horaire), avec un léger jeu à chaque coupe
-function sectorPath(g, a1, a2) {
-  var pad = 0.6;
-  a1 += pad; a2 -= pad;
+// Secteur annulaire de a1 à a2 (sens horaire), coins légèrement arrondis par le jeu aux coupes
+function sectorPath(cx, cy, ri, ro, a1, a2, gapDeg) {
+  var go = gapDeg * 0.5 * (200 / ro), gi = gapDeg * 0.5 * (200 / ri); // jeu constant en pixels
+  var o1 = polar(cx, cy, ro, a1 + go), o2 = polar(cx, cy, ro, a2 - go);
+  var i1 = polar(cx, cy, ri, a1 + gi), i2 = polar(cx, cy, ri, a2 - gi);
   var large = (a2 - a1) > 180 ? 1 : 0;
-  var o1 = polar(g.cx, g.cy, g.ro, a1), o2 = polar(g.cx, g.cy, g.ro, a2);
-  var i1 = polar(g.cx, g.cy, g.ri, a1), i2 = polar(g.cx, g.cy, g.ri, a2);
-  return 'M' + o1.join(',') +
-    ' A' + g.ro + ',' + g.ro + ' 0 ' + large + ' 1 ' + o2.join(',') +
-    ' L' + i2.join(',') +
-    ' A' + g.ri + ',' + g.ri + ' 0 ' + large + ' 0 ' + i1.join(',') + ' Z';
+  return 'M' + fmt(o1) + ' A' + ro + ',' + ro + ' 0 ' + large + ' 1 ' + fmt(o2) +
+    ' L' + fmt(i2) + ' A' + ri + ',' + ri + ' 0 ' + large + ' 0 ' + fmt(i1) + ' Z';
+}
+// Arc pour un texte : sens horaire (texte lisible tête vers l'extérieur) ou antihoraire (tête vers le centre)
+function arcPath(cx, cy, r, a1, a2, clockwise) {
+  var p1 = polar(cx, cy, r, a1), p2 = polar(cx, cy, r, a2);
+  var large = (a2 - a1) > 180 ? 1 : 0;
+  return clockwise
+    ? 'M' + fmt(p1) + ' A' + r + ',' + r + ' 0 ' + large + ' 1 ' + fmt(p2)
+    : 'M' + fmt(p2) + ' A' + r + ',' + r + ' 0 ' + large + ' 0 ' + fmt(p1);
 }
 
 // Fenêtre d'explication (créée une seule fois)
@@ -321,80 +348,96 @@ function openServiceModal(groupKey, itemKey, returnFocus) {
   overlay.querySelector('.modal-close').focus();
 }
 
-document.querySelectorAll('.card-img img[data-infographic]').forEach(function (img) {
-  var groupKey = img.getAttribute('data-infographic');
+// ---------------------------------------------------------------------------
+// Construction des infographies en SVG (nettes à toute taille, segments cliquables)
+// ---------------------------------------------------------------------------
+var SVG_NS = 'http://www.w3.org/2000/svg';
+function svgEl(name, attrs) {
+  var el = document.createElementNS(SVG_NS, name);
+  for (var k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+var IMG_BASE = (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? '../' : '';
+
+function buildInfographic(container) {
+  var groupKey = container.getAttribute('data-infographic');
   var g = INFOGRAPHICS[groupKey];
   if (!g) return;
-  var svgNS = 'http://www.w3.org/2000/svg';
-  var svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('class', 'hotspots');
-  svg.setAttribute('viewBox', '0 0 ' + g.w + ' ' + g.h);
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  svg.setAttribute('aria-label', SERVICE_TEXTS[LANG].groups[groupKey]);
-  g.segments.forEach(function (seg) {
-    var label = SERVICE_TEXTS[LANG].items[seg.key].title;
-    var path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('class', 'hotspot');
-    path.setAttribute('d', sectorPath(g, seg.from, seg.to));
-    path.setAttribute('tabindex', '0');
-    path.setAttribute('role', 'button');
-    path.setAttribute('aria-label', label);
-    var tip = document.createElementNS(svgNS, 'title');
-    tip.textContent = label;
+  var labels = ARC_LABELS[LANG];
+  var SIZE = 420, cx = 210, cy = 210, ro = 200, ri = 134, rm = (ro + ri) / 2;
+  var seven = g.segments.length > 4;
+  var fontSize = seven ? 14.5 : 21;
+  var lineGap = seven ? 9 : 12.5;
+
+  // Titre au-dessus de l'anneau
+  var title = document.createElement('h3');
+  title.className = 'infographic-title';
+  title.textContent = SERVICE_TEXTS[LANG].groups[groupKey];
+  container.parentNode.insertBefore(title, container);
+
+  var svg = svgEl('svg', { viewBox: '0 0 ' + SIZE + ' ' + SIZE, 'aria-hidden': 'true' });
+  var defs = svgEl('defs', {});
+  svg.appendChild(defs);
+
+  // Illustration au centre (extraite de l'image d'origine, améliorée)
+  var clipId = 'clip-' + groupKey;
+  var clip = svgEl('clipPath', { id: clipId });
+  clip.appendChild(svgEl('circle', { cx: cx, cy: cy, r: ri - 6 }));
+  defs.appendChild(clip);
+  var img = svgEl('image', {
+    href: IMG_BASE + 'assets/img/services/center-' + groupKey + '.png',
+    x: cx - (ri - 6), y: cy - (ri - 6), width: 2 * (ri - 6), height: 2 * (ri - 6),
+    'clip-path': 'url(#' + clipId + ')', class: 'center-image', preserveAspectRatio: 'xMidYMid slice'
+  });
+  svg.appendChild(img);
+
+  g.segments.forEach(function (seg, idx) {
+    var a1 = seg.from, a2 = seg.to;
+    var mid = ((a1 + a2) / 2) % 360; if (mid < 0) mid += 360;
+    var clockwise = !(mid > 20 && mid < 160); // les segments du bas se lisent tête vers le centre
+    var lines = labels[seg.key] || [SERVICE_TEXTS[LANG].items[seg.key].title];
+
+    var path = svgEl('path', {
+      d: sectorPath(cx, cy, ri, ro, a1, a2, seven ? 2.2 : 2.6),
+      class: 'segment', tabindex: '0', role: 'button',
+      'aria-label': SERVICE_TEXTS[LANG].items[seg.key].title
+    });
+    var tip = svgEl('title', {}); tip.textContent = SERVICE_TEXTS[LANG].items[seg.key].title;
     path.appendChild(tip);
-    function activate(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      openServiceModal(groupKey, seg.key, path);
-    }
+    function activate(e) { e.preventDefault(); e.stopPropagation(); openServiceModal(groupKey, seg.key, path); }
     path.addEventListener('click', activate);
-    path.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') activate(e);
-    });
+    path.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') activate(e); });
     svg.appendChild(path);
-  });
-  img.parentNode.appendChild(svg);
-});
 
-// Un clic au centre de l'infographie (hors segments) la fait tourner sur elle-même
-document.querySelectorAll('.card-img img').forEach(function (img) {
+    // Textes sur arcs : la première ligne est la plus éloignée du "haut" du texte
+    var group = svgEl('g', { class: 'segment-labels' });
+    var n = lines.length;
+    lines.forEach(function (line, li) {
+      var offsetIndex = (li - (n - 1) / 2);            // -0.5 / +0.5 pour deux lignes, 0 pour une
+      var r = clockwise ? rm + (-offsetIndex) * lineGap * 2 : rm + offsetIndex * lineGap * 2;
+      // décalage de la ligne de base pour centrer verticalement le texte sur l'arc
+      var baseline = clockwise ? fontSize * 0.35 : -fontSize * 0.35;
+      var pid = 'arc-' + groupKey + '-' + idx + '-' + li;
+      defs.appendChild(svgEl('path', { id: pid, d: arcPath(cx, cy, r, a1, a2, clockwise), fill: 'none' }));
+      var text = svgEl('text', { class: 'segment-label', 'font-size': fontSize, dy: baseline });
+      var tp = svgEl('textPath', { href: '#' + pid, startOffset: '50%', 'text-anchor': 'middle' });
+      tp.textContent = line;
+      text.appendChild(tp);
+      group.appendChild(text);
+    });
+    svg.appendChild(group);
+  });
+
+  // Un clic sur l'illustration centrale fait tourner l'anneau
   img.addEventListener('click', function () {
-    if (img.classList.contains('tourne')) return;
-    img.classList.add('tourne');
+    if (svg.classList.contains('tourne')) return;
+    svg.classList.add('tourne');
   });
-  img.addEventListener('animationend', function () {
-    img.classList.remove('tourne');
-  });
-});
+  svg.addEventListener('animationend', function () { svg.classList.remove('tourne'); });
 
-// Carrousels (témoignages, réalisations) : les flèches font défiler d'une carte
-function setupCarousel(track, arrows) {
-  function step() {
-    var card = track.firstElementChild;
-    var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 16;
-    return card ? card.getBoundingClientRect().width + gap : 400;
-  }
-  function refresh() {
-    var max = track.scrollWidth - track.clientWidth - 2;
-    arrows.forEach(function (btn) {
-      var dir = Number(btn.getAttribute('data-dir'));
-      var off = dir < 0 ? track.scrollLeft <= 2 : track.scrollLeft >= max;
-      if (off) btn.setAttribute('disabled', ''); else btn.removeAttribute('disabled');
-    });
-  }
-  arrows.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      track.scrollBy({ left: step() * Number(btn.getAttribute('data-dir')), behavior: 'smooth' });
-    });
-  });
-  track.addEventListener('scroll', refresh, { passive: true });
-  window.addEventListener('resize', refresh);
-  refresh();
+  container.appendChild(svg);
 }
-var reviewsTrack = document.querySelector('.reviews-track');
-if (reviewsTrack) setupCarousel(reviewsTrack, document.querySelectorAll('.review-arrow'));
-var projectTrack = document.getElementById('project-track');
-if (projectTrack) setupCarousel(projectTrack, document.querySelectorAll('.carousel-arrow[data-track="project-track"]'));
+document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfographic);
 
 // ---------------------------------------------------------------------------
 // Défilement par section : un coup de molette = une section, avec une animation
