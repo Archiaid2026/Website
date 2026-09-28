@@ -565,7 +565,7 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
 
 // Scroll-reveal for sections and cards
 var revealTargets = document.querySelectorAll(
-  '.section h2, .card, .pillar, .testimonial-slider, .roadmap-heading, .step-card, .logo-col, .clients-copy, .stat-card'
+  '.section h2, .card, .pillar, .testimonial-slider, .roadmap-heading, .step-card, .clients-copy, .stat-card'
 );
 revealTargets.forEach(function (el) { el.classList.add('reveal'); });
 
