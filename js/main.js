@@ -66,13 +66,13 @@ if (modalOverlay) {
   // courriel : un courriel déjà connu met la fiche à jour, il n'en crée pas une seconde.
   var HUBSPOT = {
     portalId: '44586873',
-    signupFormId: '',                       // formId du formulaire « Tools sign-up »
+    signupFormId: 'e2dec180-226a-4839-a751-3d268f4bc34d',                     // formId du formulaire « Tools sign-up »
     host: 'api.hsforms.com'
   };
   function creerContactHubSpot(u) {
-    if (!HUBSPOT.portalId || !HUBSPOT.signupFormId || !u.courriel) return;
+    if (!HUBSPOT.portalId || !HUBSPOT.signupFormId || !u.courriel) return Promise.resolve();
     try {
-      fetch('https://' + HUBSPOT.host + '/submissions/v3/integration/submit/' + HUBSPOT.portalId + '/' + HUBSPOT.signupFormId, {
+      return fetch('https://' + HUBSPOT.host + '/submissions/v3/integration/submit/' + HUBSPOT.portalId + '/' + HUBSPOT.signupFormId, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         keepalive: true,                    // l'envoi survit à la redirection vers les outils
@@ -85,8 +85,9 @@ if (modalOverlay) {
           ].filter(function (f) { return f.value; }),
           context: { pageUri: window.location.href, pageName: document.title }
         })
-      }).catch(function (err) { console.warn('Contact HubSpot non créé :', err); });
-    } catch (err) {}
+      }).then(function (r) { if (!r.ok) console.warn('Contact HubSpot refusé : HTTP ' + r.status); })
+        .catch(function (err) { console.warn('Contact HubSpot non créé :', err); });
+    } catch (err) { return Promise.resolve(); }
   }
 
   forms.forEach(function (form) {
@@ -106,7 +107,7 @@ if (modalOverlay) {
         localStorage.setItem('archiaid_lang', (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? 'fr' : 'en');
         localStorage.setItem('archiaid_user', JSON.stringify(u));
       } catch (err) {}
-      creerContactHubSpot(u);
+      var envoi = creerContactHubSpot(u);
       var note = form.querySelector('.form-note');
       if (note) {
         note.textContent = note.getAttribute('data-success');
@@ -114,7 +115,11 @@ if (modalOverlay) {
       }
       var destination = modalOverlay.getAttribute('data-redirect');
       if (destination) {
-        setTimeout(function () { window.location.href = destination; }, 600);
+        // On laisse à HubSpot jusqu'à 1,5 s pour répondre avant de changer de page
+        var attente = new Promise(function (res) { setTimeout(res, 1500); });
+        Promise.race([envoi, attente]).then(function () {
+          setTimeout(function () { window.location.href = destination; }, 300);
+        });
       }
     });
   });
