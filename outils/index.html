@@ -21,7 +21,7 @@
       localStorage.setItem("archiaid_lang", LANG);
     } catch (e) {}
     document.documentElement.lang = LANG;
-    var SITE_HOME = LANG === "en" ? "../index.html" : "../fr/index.html";
+    var SITE_HOME = LANG === "en" ? "../" : "../fr/";
 
     // Accès réservé aux personnes connectées (vérification côté client seulement)
     try {
@@ -62,11 +62,11 @@
 
   <header class="site-header" id="top">
     <div class="container header-inner">
-      <a href="../fr/index.html" class="logo" id="logo-link" aria-label="Archi Aid">
+      <a href="../fr/" class="logo" id="logo-link" aria-label="Archi Aid">
         <img src="../assets/img/logo.png" alt="Archi Aid">
       </a>
       <nav class="main-nav" aria-label="Navigation">
-        <a href="../fr/index.html" id="back-link" data-i18n="back">Retour au site</a>
+        <a href="../fr/" id="back-link" data-i18n="back">Retour au site</a>
         <a href="#" class="lang-switch logout" id="logout" data-i18n="logout">Se déconnecter</a>
       </nav>
     </div>
