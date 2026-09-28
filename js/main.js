@@ -518,8 +518,6 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
   window.addEventListener('wheel', function (e) {
     if (e.ctrlKey) return;                       // zoom navigateur
     if (document.body.classList.contains('modal-locked')) return;
-    // les rangées défilantes (témoignages, réalisations) gardent leur molette horizontale
-    if (e.target.closest && e.target.closest('.project-track') && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     e.preventDefault();
     var now = Date.now();
     if (animating || now - lastWheel < 60) { lastWheel = now; return; }
@@ -567,7 +565,7 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
 
 // Scroll-reveal for sections and cards
 var revealTargets = document.querySelectorAll(
-  '.section h2, .card, .pillar, .testimonial-slider, .project-card, .roadmap-heading, .step-card, .logo-col, .clients-copy, .stat-card'
+  '.section h2, .card, .pillar, .testimonial-slider, .roadmap-heading, .step-card, .logo-col, .clients-copy, .stat-card'
 );
 revealTargets.forEach(function (el) { el.classList.add('reveal'); });
 
