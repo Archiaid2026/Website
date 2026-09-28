@@ -64,20 +64,60 @@ if (modalOverlay) {
 
   // Connexion côté client : on enregistre l'utilisateur dans le navigateur
   // puis on le redirige vers la page des outils (pas de serveur d'authentification).
+  // À la création d'un compte, le contact est aussi créé dans HubSpot par le
+  // formulaire « Tools sign-up ». HubSpot fait correspondre les contacts par
+  // courriel : un courriel déjà connu met la fiche à jour, il n'en crée pas une seconde.
+  var HUBSPOT = {
+    portalId: '44586873',
+    signupFormId: '',                       // formId du formulaire « Tools sign-up »
+    host: 'api.hsforms.com'
+  };
+  function creerContactHubSpot(u) {
+    if (!HUBSPOT.portalId || !HUBSPOT.signupFormId || !u.courriel) return;
+    try {
+      fetch('https://' + HUBSPOT.host + '/submissions/v3/integration/submit/' + HUBSPOT.portalId + '/' + HUBSPOT.signupFormId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,                    // l'envoi survit à la redirection vers les outils
+        body: JSON.stringify({
+          fields: [
+            { name: 'email',     value: u.courriel },
+            { name: 'firstname', value: u.prenom },
+            { name: 'lastname',  value: u.famille },
+            { name: 'company',   value: u.entreprise }
+          ].filter(function (f) { return f.value; }),
+          context: { pageUri: window.location.href, pageName: document.title }
+        })
+      }).catch(function (err) { console.warn('Contact HubSpot non créé :', err); });
+    } catch (err) {}
+  }
+
   forms.forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var nameInput = form.querySelector('input[name="name"]');
-      var emailInput = form.querySelector('input[name="email"]');
+      var val = function (name) { var i = form.querySelector('input[name="' + name + '"]'); return i ? i.value.trim() : ''; };
+      var u = {
+        prenom: val('firstname'),
+        famille: val('lastname'),
+        entreprise: val('company'),
+        courriel: val('email'),
+        depuis: new Date().toISOString()
+      };
+      u.nom = (u.prenom + ' ' + u.famille).trim();
       try {
         // La page des outils s'ouvrira dans la langue du site où l'on se connecte
         localStorage.setItem('archiaid_lang', (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? 'fr' : 'en');
-        localStorage.setItem('archiaid_user', JSON.stringify({
-          nom: nameInput ? nameInput.value.trim() : '',
-          courriel: emailInput ? emailInput.value.trim() : '',
-          depuis: new Date().toISOString()
-        }));
+        // À la connexion (courriel + mot de passe), on garde le nom et l'entreprise déjà connus
+        if (form.id === 'login-form') {
+          var ancien = JSON.parse(localStorage.getItem('archiaid_user') || 'null');
+          if (ancien && ancien.courriel === u.courriel) {
+            u.prenom = ancien.prenom || ''; u.famille = ancien.famille || '';
+            u.entreprise = ancien.entreprise || ''; u.nom = ancien.nom || '';
+          }
+        }
+        localStorage.setItem('archiaid_user', JSON.stringify(u));
       } catch (err) {}
+      if (form.id === 'signup-form') creerContactHubSpot(u);
       var note = form.querySelector('.form-note');
       if (note) {
         note.textContent = note.getAttribute('data-success');

@@ -586,8 +586,9 @@ function contactConnecte(){
     const u = JSON.parse(localStorage.getItem("archiaid_user") || "null");
     if(u){
       const morceaux = (u.nom || "").trim().split(/\s+/).filter(Boolean);
-      contact.prenom = morceaux.shift() || "";
-      contact.nom = morceaux.join(" ") || contact.prenom;
+      contact.prenom = u.prenom || morceaux.shift() || "";
+      contact.nom = u.famille || morceaux.join(" ") || contact.prenom;
+      contact.entreprise = u.entreprise || "";
       contact.courriel = (u.courriel || "").trim();
     }
   } catch(e){}

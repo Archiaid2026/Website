@@ -371,8 +371,16 @@
       </form>
       <form class="modal-form" id="signup-form">
         <div class="form-field">
-          <label for="signup-name">Nom complet</label>
-          <input type="text" id="signup-name" name="name" autocomplete="name" required>
+          <label for="signup-firstname">Prénom</label>
+          <input type="text" id="signup-firstname" name="firstname" autocomplete="given-name" required>
+        </div>
+        <div class="form-field">
+          <label for="signup-lastname">Nom</label>
+          <input type="text" id="signup-lastname" name="lastname" autocomplete="family-name" required>
+        </div>
+        <div class="form-field">
+          <label for="signup-company">Entreprise</label>
+          <input type="text" id="signup-company" name="company" autocomplete="organization" required>
         </div>
         <div class="form-field">
           <label for="signup-email">Courriel</label>
