@@ -10,7 +10,7 @@
     --brun:#241B19;
     --acier:#2D4A6B;
     --terracotta:#AF7E7B;
-    --sarcelle:#2E6F6B;--ocre:#8A5A2B;
+    --sarcelle:#2E6F6B;
     --fond:#FBF9F7;
     --carte:#FFFFFF;
     --trait:#E4DCD7;
@@ -37,10 +37,9 @@
   p.plein{color:var(--texte)}
 
   .axe-etiquette{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:5px 10px;border-radius:4px;margin-bottom:16px}
-  .axe-operationnel{background:#EDF1F6;color:var(--acier)}
-  .axe-ia{background:#E9F2F1;color:var(--sarcelle)}
-  .axe-numerique{background:#F5EFE8;color:var(--ocre)}
-  .axe-bim{background:#F6EDEB;color:var(--rouille)}
+  .axe-operational_management{background:#EDF1F6;color:var(--acier)}
+  .axe-ai_integration{background:#E9F2F1;color:var(--sarcelle)}
+  .axe-bim_maturity{background:#F6EDEB;color:var(--rouille)}
 
   .enonce{font-size:20px;line-height:1.45;font-weight:600;margin-bottom:26px}
   @media(max-width:560px){.enonce{font-size:18px}}
@@ -67,42 +66,37 @@
   .discret{background:none;color:var(--texte-doux);padding:13px 4px;text-decoration:underline}
   .discret:hover{color:var(--texte)}
 
-  .score-bloc{text-align:center;padding:24px 0 12px;border-bottom:1px solid var(--trait);margin-bottom:26px}
-  .score-chiffre{font-size:54px;font-weight:700;color:var(--rouille);line-height:1}
-  .score-sur{font-size:20px;color:var(--texte-doux);font-weight:400}
+  /* Résultats : trois scores côte à côte */
+  .scores{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:8px 0 28px}
+  .scores.deux{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:560px){.scores,.scores.deux{grid-template-columns:1fr}}
+  .score-carte{border:1px solid var(--trait);border-radius:8px;padding:18px 16px;text-align:center}
+  .score-carte.prio{border-color:var(--rouille);background:#FDFAF9}
+  .score-nom{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--texte-doux);font-weight:600;min-height:32px}
+  .score-chiffre{font-size:44px;font-weight:700;line-height:1.1;margin:6px 0 2px}
+  .score-sur{font-size:16px;color:var(--texte-doux);font-weight:400}
+  .score-niveau{font-size:14px;font-weight:700;color:var(--brun)}
+  .score-carte .axe-jauge{margin-top:12px}
 
-  /* Lecture détaillée, une par dimension */
-  .lecture-bloc{padding:18px 0;border-bottom:1px solid var(--trait)}
-  .lecture-bloc:last-child{border-bottom:none}
-  .lecture-entete{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:4px}
-  .lecture-cle{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--texte-doux);font-weight:600}
-  .lecture-val{font-size:18px;font-weight:700;color:var(--rouille);text-align:right;white-space:nowrap}
-  .lecture-note{font-size:12px;color:var(--texte-doux);margin-bottom:8px}
-  .lecture-texte{font-size:15px;color:var(--texte);margin:0}
-
-  .axe-titre{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px;gap:12px}
   .axe-jauge{height:8px;background:var(--trait);border-radius:4px;overflow:hidden}
   .axe-jauge span{display:block;height:100%;border-radius:4px}
 
-  .matrice{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}
-  .matrice th,.matrice td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--trait);vertical-align:top}
-  .matrice thead th{border-bottom:2px solid var(--brun);font-size:13px}
-  .matrice tbody th{font-weight:400;color:var(--texte-doux);width:22%}
-  .matrice td{font-weight:700;color:var(--brun)}
-  .matrice td.col-prio{color:var(--rouille);background:#FCF6F4}
-  .col-axe{display:block;font-weight:700}
-  .col-note{display:block;font-weight:400;color:var(--texte-doux);font-size:12px;margin-top:2px}
-
-  .bloc-axe{border:1px solid var(--trait);border-radius:8px;padding:16px 18px;margin-bottom:14px}
+  /* Détail par axe : ses sous-sections */
+  .bloc-axe{border:1px solid var(--trait);border-radius:8px;padding:18px 20px;margin-bottom:16px}
   .bloc-axe.bloc-prio{border-color:var(--rouille);background:#FDFAF9}
-  .bloc-axe .axe-jauge{margin-bottom:10px}
-  .paire{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--trait);font-size:14px}
-  .paire:last-child{border-bottom:none}
-  .paire span:first-child{color:var(--texte-doux)}
-  .paire span:last-child{font-weight:700;color:var(--brun);text-align:right}
+  .bloc-entete{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:4px}
+  .bloc-entete h3{margin:0}
+  .bloc-niveau{font-size:15px;font-weight:700;color:var(--rouille);white-space:nowrap}
+  .bloc-texte{font-size:14px;color:var(--texte);margin:0 0 14px}
+  .sous{display:grid;grid-template-columns:1fr 120px 110px;gap:10px 14px;align-items:center;padding:8px 0;border-top:1px solid var(--trait);font-size:14px}
+  .sous.prio{color:var(--rouille);font-weight:700}
+  .sous-nom{color:var(--texte)}
+  .sous.prio .sous-nom{color:var(--rouille)}
+  .sous-val{text-align:right;font-weight:700;color:var(--brun);font-size:13px}
+  .sous.prio .sous-val{color:var(--rouille)}
+  @media(max-width:520px){.sous{grid-template-columns:1fr 90px}.sous .axe-jauge{grid-column:1 / -1}}
 
-  .vue-etroite{display:none}
-  @media(max-width:640px){.vue-large{display:none}.vue-etroite{display:block}}
+  .note-bim{font-size:13px;color:var(--texte-doux);border:1px dashed var(--trait);border-radius:8px;padding:12px 16px;margin-bottom:16px}
 
   .encadre{background:#F6F2EF;border-left:3px solid var(--rouille);padding:18px 20px;border-radius:0 8px 8px 0;margin:24px 0}
   .encadre h3{color:var(--rouille)}
@@ -126,27 +120,27 @@
 <script>
 /* ==========================================================================
    1. CONFIGURATION
+   Laisser PORTAL_ID ou FORM_GUID vide désactive l'envoi à HubSpot (le
+   résultat s'affiche quand même). À remplir avec le nouveau portail.
    ========================================================================== */
 const CONFIG = {
-  PORTAL_ID : "343483061",                               // Dermagen (bac à sable)
-  FORM_GUID : "4569c3cf-d304-45a3-a781-0d780c3f0529",     // Collecteur diagnostic maturité
-  URL_RENDEZVOUS : "https://meetings.hubspot.com/a-remplacer",
-  // L'activité et la taille sont envoyées dans maturite_categorie et maturite_taille.
-  // Si ces propriétés n'existent pas encore sur le formulaire collecteur, la
-  // soumission est automatiquement relancée sans elles : aucun prospect n'est perdu,
-  // et l'avertissement apparaît dans la console du navigateur.
-  PROPRIETES_PROFIL_ACTIVES : true
+  PORTAL_ID : "",                                          // numéro du portail HubSpot (Hub ID)
+  FORM_GUID : "",                                          // formulaire « Digital Maturity Assessment »
+  HSFORMS_HOST : "api.hsforms.com",                        // api-eu1.hsforms.com pour un portail hébergé en Europe
+  URL_RENDEZVOUS : "https://meetings.hubspot.com/a-remplacer"
 };
 
 /* ==========================================================================
    2. PROFIL DE L'ORGANISATION (non noté)
+   `bim` indique si le volet BIM est évalué ; `famille` choisit la version
+   des énoncés BIM. Les valeurs sont celles des listes HubSpot.
    ========================================================================== */
 const CATEGORIES = [
-  { valeur:"promoteur",            libelle:"Développement immobilier / Promoteur",                 famille:"donneur_ouvrage" },
-  { valeur:"architecture",         libelle:"Architecture",                                          famille:"conception" },
-  { valeur:"ingenierie",           libelle:"Ingénierie (structure, civil, mécanique, électrique)",  famille:"conception" },
-  { valeur:"entrepreneur_general", libelle:"Entrepreneur général / Gestion de construction",        famille:"realisation" },
-  { valeur:"autre",                libelle:"Autre",                                                 famille:"autre" }
+  { valeur:"promoteur",            libelle:"Développement immobilier / Promoteur",                famille:"donneur_ouvrage", bim:true },
+  { valeur:"architecture",         libelle:"Architecture",                                         famille:"conception",      bim:true },
+  { valeur:"ingenierie",           libelle:"Ingénierie (structure, civil, mécanique, électrique)", famille:"conception",      bim:true },
+  { valeur:"entrepreneur_general", libelle:"Entrepreneur général / Gestion de construction",       famille:"realisation",     bim:true },
+  { valeur:"autre",                libelle:"Autre",                                                famille:null,              bim:false }
 ];
 
 const TAILLES = [
@@ -157,35 +151,6 @@ const TAILLES = [
   { valeur:"500_ou_plus", libelle:"500 employés et plus" }
 ];
 
-/* ==========================================================================
-   3. LES TROIS AXES ET LES QUATRE LECTURES
-   Le questionnaire est une matrice : 4 axes x 4 lectures = 16 énoncés.
-   Chaque énoncé appartient à un axe ET à une lecture, ce qui rend les deux
-   dimensions indépendantes. Un axe se lit en colonne (4 énoncés, 4 à 20),
-   une lecture se lit en ligne (4 énoncés, 4 à 20).
-   ========================================================================== */
-const AXES = [
-  { cle:"entreprise", libelle:"Gestion opérationnelle", couleur:"var(--acier)",   classe:"axe-operationnel",
-    conseil:"Structurer la visibilité sur vos projets et relier vos systèmes entre eux." },
-  { cle:"numerique",  libelle:"Transformation numérique", couleur:"var(--ocre)", classe:"axe-numerique",
-    conseil:"Centraliser vos systèmes et encadrer l'adoption des outils à l'échelle de l'entreprise." },
-  { cle:"ia",         libelle:"Intégration de l'IA",    couleur:"var(--sarcelle)",classe:"axe-ia",
-    conseil:"Encadrer l'usage des outils d'IA et cibler les tâches où le gain est mesurable." },
-  { cle:"bim",        libelle:"Maturité BIM",           couleur:"var(--rouille)", classe:"axe-bim",
-    conseil:"Formaliser vos exigences et vos processus BIM par livrable." }
-];
-
-const LECTURES = [
-  { cle:"etat_de_fait", libelle:"État de fait",
-    question:"Ce qui existe et s'utilise réellement aujourd'hui." },
-  { cle:"processus", libelle:"Maturité de processus",
-    question:"Ce qui est formalisé, répétable et indépendant des personnes." },
-  { cle:"donnee", libelle:"Circulation de la donnée",
-    question:"La capacité de l'information à circuler sans être ressaisie." },
-  { cle:"position", libelle:"Position concurrentielle",
-    question:"Votre situation face aux exigences de votre marché." }
-];
-
 const ECHELLE = [
   { note:1, ancre:"Pas du tout d'accord" },
   { note:2, ancre:"Plutôt en désaccord" },
@@ -194,137 +159,186 @@ const ECHELLE = [
   { note:5, ancre:"Tout à fait d'accord" }
 ];
 
-/* Énoncés, dans l'ordre des lectures pour chaque axe. Tous formulés
-   positivement : accord élevé = maturité élevée. */
-const ENONCES_ENTREPRISE = {
-  etat_de_fait:"J'ai un visuel global de l'exécution de mes projets en cours, sans avoir à consulter chaque personne.",
-  processus:"Nos façons de faire sont documentées et appliquées de la même manière d'un projet à l'autre.",
-  donnee:"Nos outils sont reliés entre eux : une même information n'a pas à être ressaisie à plusieurs endroits.",
-  position:"Nous répondons aux exigences de suivi et de reddition de comptes de nos clients sans mobiliser d'effort exceptionnel."
-};
-
-const ENONCES_NUMERIQUE = {
-  etat_de_fait:"Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement (fichiers locaux, courriels, applications personnelles).",
-  processus:"L'adoption d'un nouvel outil suit une démarche définie : besoin, choix, déploiement, formation, puis mesure des résultats.",
-  donnee:"Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan.",
-  position:"Nos outils numériques sont un argument auprès de nos clients et partenaires, pas un rattrapage par rapport à eux."
-};
-
-const ENONCES_IA = {
-  etat_de_fait:"Mes équipes utilisent des outils d'intelligence artificielle dans leur travail courant, pas seulement à l'essai.",
-  processus:"Nous avons des règles écrites sur les informations qui peuvent être soumises à un outil d'IA externe.",
-  donnee:"Nos données de projet sont assez structurées et centralisées pour être exploitées par un outil d'IA.",
-  position:"L'IA nous fait gagner du temps sur des tâches que notre secteur traite encore manuellement."
-};
-
-const ENONCES_BIM = {
-  conception:{
-    etat_de_fait:"Nos documents contractuels sont extraits de la maquette plutôt que produits en parallèle en 2D.",
-    processus:"Chaque mandat démarre avec un plan d'exécution BIM qui définit les livrables et les niveaux de détail par phase.",
-    donnee:"Les modèles échangés entre disciplines sont exploitables tels quels, sans reconstruction ni reprise.",
-    position:"Notre maîtrise du BIM nous permet de viser des mandats que des bureaux comparables ne peuvent pas servir."
-  },
-  realisation:{
-    etat_de_fait:"La maquette est accessible au chantier et réellement utilisée par nos équipes sur le terrain.",
-    processus:"La coordination avec nos sous-traitants suit un cycle formalisé : les conflits sont détectés avant l'installation.",
-    donnee:"Nous extrayons des quantitatifs de la maquette et ils alimentent directement nos estimations.",
-    position:"Nous répondons aux exigences BIM des appels d'offres avec nos ressources internes, sans sous-traiter la coordination."
-  },
-  donneur_ouvrage:{
-    etat_de_fait:"La maquette alimente nos décisions de projet : quantitatifs, scénarios de coûts, suivi d'avancement.",
-    processus:"Nos appels d'offres précisent les livrables BIM attendus, et nous vérifions les maquettes reçues avant de les accepter.",
-    donnee:"Les données du projet sont transférées vers nos systèmes d'exploitation à la réception du bâtiment.",
-    position:"Nos exigences numériques soutiennent la comparaison avec celles des donneurs d'ouvrage les plus avancés de notre marché."
-  },
-  autre:{
-    etat_de_fait:"La maquette numérique (BIM) est utilisée dans nos projets courants, pas seulement à l'essai.",
-    processus:"Nos exigences et nos livrables BIM sont définis par écrit au démarrage de chaque projet.",
-    donnee:"Les données issues de la maquette circulent vers nos autres outils sans ressaisie.",
-    position:"Notre maîtrise du BIM répond aux exigences de nos clients et partenaires les plus avancés."
-  },
-  exploitation:{
-    etat_de_fait:"La documentation de notre parc immobilier est tenue à jour et fiable après chaque intervention.",
-    processus:"Nos contrats précisent les données numériques que doivent nous remettre concepteurs et entrepreneurs, et nous les vérifions.",
-    donnee:"Les données de nos bâtiments alimentent directement notre gestion de la maintenance, sans ressaisie.",
-    position:"Nos décisions d'investissement s'appuient sur l'état réel et l'historique de nos actifs, pas sur les urgences."
-  }
-};
-
-const LIBELLE_BIM_PAR_FAMILLE = {
-  conception:"Maturité BIM en conception",
-  realisation:"Maturité BIM en réalisation",
-  donneur_ouvrage:"Maturité BIM comme donneur d'ouvrage",
-  exploitation:"Maturité des données d'actifs",
-  autre:"Maturité BIM"
-};
-
 /* ==========================================================================
-   4. LES QUATRE PALIERS, DÉCLINÉS PAR LECTURE
-   Chaque lecture a son propre vocabulaire et son propre commentaire.
-   Le slug HubSpot reste celui déjà créé : les libellés changent sans rien casser.
+   3. LA HIÉRARCHIE : 3 AXES > 13 SOUS-SECTIONS > 2 ÉNONCÉS
+   Les clés d'axe et de sous-section sont les noms internes des propriétés
+   HubSpot (suffixe _score / _level ajouté à l'envoi).
+   Tous les énoncés sont formulés positivement : accord élevé = maturité élevée.
    ========================================================================== */
-const PALIERS = [
-  { rang:1, slug:"premiers_jalons" },
-  { rang:2, slug:"elan_amorce" },
-  { rang:3, slug:"bien_avance" },
-  { rang:4, slug:"chef_de_file" }
+const AXES = [
+  {
+    cle:"operational_management", libelle:"Gestion opérationnelle", couleur:"var(--acier)",
+    niveaux:[
+      "Le fonctionnement repose sur des personnes plutôt que sur des systèmes. L'information existe, mais il faut savoir à qui la demander.",
+      "Des outils et des pratiques sont en place, mais leur usage varie d'une équipe à l'autre. Vous payez pour des capacités que vous n'exploitez qu'en partie.",
+      "Vos processus sont documentés et vos systèmes reliés pour l'essentiel. La prochaine étape est de mesurer, pour savoir quoi améliorer.",
+      "Vos opérations sont pilotées par des données fiables et des processus qui survivent aux changements de personnel."
+    ],
+    sections:[
+      { cle:"visibility_control", libelle:"Visibilité et contrôle",
+        enonces:[
+          "J'ai une vue d'ensemble de l'exécution de mes projets en cours sans avoir à consulter chaque personne.",
+          "L'avancement et les coûts de nos projets sont à jour et consultables en tout temps, pas seulement à la réunion hebdomadaire."
+        ],
+        conseil:"Mettre en place un tableau de bord de projets alimenté par vos outils existants, revu à fréquence fixe." },
+      { cle:"process_maturity", libelle:"Maturité des processus",
+        enonces:[
+          "Nos façons de faire sont documentées et appliquées de la même manière d'un projet à l'autre.",
+          "Nos processus sont mesurés et révisés selon un cycle défini, pas seulement lorsqu'un problème survient."
+        ],
+        conseil:"Documenter les trois processus les plus fréquents et associer à chacun un indicateur suivi chaque mois." },
+      { cle:"systems_centralization", libelle:"Centralisation des systèmes",
+        enonces:[
+          "Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement.",
+          "Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan."
+        ],
+        conseil:"Désigner un système de référence par type d'information et y migrer ce qui vit encore dans les fichiers locaux et les courriels." },
+      { cle:"systems_integration", libelle:"Intégration des systèmes",
+        enonces:[
+          "Nos outils sont reliés entre eux : une même information n'a pas à être ressaisie à plusieurs endroits.",
+          "L'adoption d'un nouvel outil suit une démarche définie : besoin, choix, déploiement, formation, puis mesure des résultats."
+        ],
+        conseil:"Cartographier les ressaisies entre vos systèmes et automatiser d'abord celle qui coûte le plus d'heures." },
+      { cle:"client_reporting", libelle:"Reddition de comptes",
+        enonces:[
+          "Nous répondons aux exigences de suivi et de reddition de comptes de nos clients sans mobiliser d'effort exceptionnel.",
+          "Nos rapports d'avancement sont produits à partir de nos systèmes, sans reconstruction manuelle à chaque échéance."
+        ],
+        conseil:"Standardiser un rapport client généré depuis vos outils, plutôt que reconstruit à chaque demande." }
+    ]
+  },
+  {
+    cle:"ai_integration", libelle:"Intégration de l'IA", couleur:"var(--sarcelle)",
+    niveaux:[
+      "L'IA est absente ou à l'essai chez quelques personnes, sans cadre. Le risque tient surtout aux données qui circulent sans règles.",
+      "Des usages existent, mais sans gouvernance ni mesure. Les gains restent individuels et difficiles à généraliser.",
+      "L'IA est encadrée et utilisée dans plusieurs équipes. Il reste à structurer les données pour en tirer davantage.",
+      "L'IA est intégrée à vos façons de faire, avec des gains mesurés et des données prêtes à être exploitées."
+    ],
+    sections:[
+      { cle:"ai_adoption", libelle:"Adoption",
+        enonces:[
+          "Mes équipes utilisent des outils d'intelligence artificielle dans leur travail courant, pas seulement à l'essai.",
+          "L'usage de l'IA est répandu dans plusieurs équipes, pas porté par une ou deux personnes."
+        ],
+        conseil:"Identifier deux tâches répétitives par équipe et y introduire un outil d'IA avec un accompagnement court." },
+      { cle:"ai_governance", libelle:"Gouvernance",
+        enonces:[
+          "Nous avons des règles écrites sur les informations qui peuvent être soumises à un outil d'IA externe.",
+          "Une personne est responsable des choix d'outils d'IA et de leurs usages dans l'entreprise."
+        ],
+        conseil:"Rédiger une politique d'usage d'une page : données permises, outils approuvés, personne responsable." },
+      { cle:"data_readiness", libelle:"Préparation des données",
+        enonces:[
+          "Nos données de projet sont assez structurées et centralisées pour être exploitées par un outil d'IA.",
+          "L'historique de nos projets est accessible et consultable, pas enfoui dans des courriels et des dossiers personnels."
+        ],
+        conseil:"Structurer d'abord les données de projet les plus demandées : coûts, échéanciers, décisions." },
+      { cle:"ai_measured_value", libelle:"Valeur mesurée",
+        enonces:[
+          "L'IA nous fait gagner du temps sur des tâches que notre secteur traite encore manuellement.",
+          "Nous avons identifié et priorisé les cas d'usage de l'IA à déployer dans les douze prochains mois."
+        ],
+        conseil:"Mesurer le temps gagné sur un cas d'usage précis avant d'en lancer un deuxième." }
+    ]
+  },
+  {
+    cle:"bim_maturity", libelle:"Maturité BIM", couleur:"var(--rouille)", bimSeulement:true,
+    niveaux:[
+      "Le BIM est subi plutôt que maîtrisé : la maquette existe parfois, mais le travail réel se fait encore en 2D ou sur papier.",
+      "La maquette est utilisée, mais les processus dépendent des personnes et les échanges demandent des reprises.",
+      "Vos processus BIM sont formalisés et vos échanges fiables. Le BIM commence à peser dans vos soumissions.",
+      "Le BIM est un avantage concurrentiel : processus maîtrisés, données réutilisées, exigences dépassées."
+    ],
+    sections:[
+      { cle:"model_based_production", libelle:"Production à partir de la maquette",
+        enonces:{
+          conception:[
+            "Nos documents contractuels sont extraits de la maquette plutôt que produits en parallèle en 2D.",
+            "La maquette est le support de travail principal de nos équipes, du concept aux plans d'exécution."
+          ],
+          realisation:[
+            "La maquette est accessible au chantier et réellement utilisée par nos équipes sur le terrain.",
+            "Nos équipes de projet consultent la maquette plutôt que des plans imprimés pour préparer les travaux."
+          ],
+          donneur_ouvrage:[
+            "La maquette alimente nos décisions de projet : quantitatifs, scénarios de coûts, suivi d'avancement.",
+            "Nous consultons la maquette nous-mêmes plutôt que d'attendre des extraits de nos consultants."
+          ]
+        },
+        conseil:"Choisir un livrable et le produire uniquement à partir de la maquette sur le prochain projet." },
+      { cle:"bim_process", libelle:"Processus BIM",
+        enonces:{
+          conception:[
+            "Chaque mandat démarre avec un plan d'exécution BIM qui définit les livrables et les niveaux de détail par phase.",
+            "Nos gabarits, nos bibliothèques et nos normes de modélisation sont communs à tous les projets."
+          ],
+          realisation:[
+            "La coordination avec nos sous-traitants suit un cycle formalisé : les conflits sont détectés avant l'installation.",
+            "Nos exigences BIM envers les sous-traitants sont écrites dans les contrats et vérifiées."
+          ],
+          donneur_ouvrage:[
+            "Nos appels d'offres précisent les livrables BIM attendus, et nous vérifions les maquettes reçues avant de les accepter.",
+            "Un responsable BIM est désigné de notre côté sur chaque projet, avec un mandat clair."
+          ]
+        },
+        conseil:"Rédiger un plan d'exécution BIM type et l'imposer dès le démarrage de chaque projet." },
+      { cle:"data_exchange", libelle:"Échange des données",
+        enonces:{
+          conception:[
+            "Les modèles échangés entre disciplines sont exploitables tels quels, sans reconstruction ni reprise.",
+            "Nos quantitatifs et nos tableaux sont extraits de la maquette et réutilisés sans ressaisie."
+          ],
+          realisation:[
+            "Nous extrayons des quantitatifs de la maquette et ils alimentent directement nos estimations.",
+            "Les maquettes reçues des concepteurs sont exploitables sans reconstruction par notre équipe."
+          ],
+          donneur_ouvrage:[
+            "Les données du projet sont transférées vers nos systèmes d'exploitation à la réception du bâtiment.",
+            "Les maquettes de nos différents projets suivent un format commun qui permet de les comparer."
+          ]
+        },
+        conseil:"Fixer un format d'échange et un niveau de détail par livrable, et vérifier chaque maquette reçue selon ces critères." },
+      { cle:"bim_market_position", libelle:"Position sur le marché",
+        enonces:{
+          conception:[
+            "Notre maîtrise du BIM nous permet de viser des mandats que des bureaux comparables ne peuvent pas servir.",
+            "Nous répondons aux exigences BIM des donneurs d'ouvrage publics sans ajouter de ressources externes."
+          ],
+          realisation:[
+            "Nous répondons aux exigences BIM des appels d'offres avec nos ressources internes, sans sous-traiter la coordination.",
+            "Notre capacité BIM est un argument dans nos soumissions, pas une contrainte à absorber."
+          ],
+          donneur_ouvrage:[
+            "Nos exigences numériques soutiennent la comparaison avec celles des donneurs d'ouvrage les plus avancés de notre marché.",
+            "Les données de nos projets nous servent après la livraison, pour l'exploitation et les projets suivants."
+          ]
+        },
+        conseil:"Faire de votre capacité BIM un argument explicite dans vos offres de service et vos soumissions." }
+    ]
+  }
 ];
 
-const VERDICTS = {
-  etat_de_fait:[
-    { libelle:"Informel",
-      texte:"Ce qui fonctionne chez vous repose sur des personnes plutôt que sur des systèmes. L'information existe, mais il faut savoir à qui la demander. Le risque tient à cette dépendance : une absence prolongée ou un départ fait perdre du terrain immédiatement." },
-    { libelle:"En structuration",
-      texte:"Des outils et des pratiques sont en place, mais leur usage varie selon les équipes et selon les projets. Vous payez déjà pour des capacités que vous n'exploitez qu'en partie, ce qui est la forme de gaspillage la plus fréquente à ce stade." },
-    { libelle:"Structuré",
-      texte:"Vos outils sont en place et utilisés de façon constante d'un projet à l'autre. L'écart qui reste ne se situe plus dans l'équipement mais dans ce que vous en tirez : le même outillage peut produire beaucoup plus." },
-    { libelle:"Intégré",
-      texte:"Vos systèmes et vos pratiques forment un ensemble cohérent, sans zone grise ni contournement. Le travail porte désormais sur l'affinage plutôt que sur la mise en place." }
-  ],
-  processus:[
-    { libelle:"Réactif",
-      texte:"Les façons de faire se décident au cas par cas, souvent en réaction à un problème déjà survenu. Chaque projet refait une partie du cadrage déjà produit ailleurs, sans que personne ne le remarque parce que le coût est diffus." },
-    { libelle:"Encadré",
-      texte:"Des gabarits et des règles existent, mais leur application dépend de la bonne volonté de chacun. Le processus tient tant que les personnes habituelles sont en place ; il se dégrade dès qu'un projet sort de l'ordinaire." },
-    { libelle:"Maîtrisé",
-      texte:"Vos processus sont documentés et réellement suivis. La prochaine étape est de les mesurer : sans indicateurs, vous ne saurez pas lesquels méritent d'être révisés ni lesquels vous coûtent plus qu'ils ne rapportent." },
-    { libelle:"Optimisé",
-      texte:"Vos processus sont documentés, mesurés et révisés selon un cycle défini. C'est le niveau où l'amélioration devient continue plutôt qu'épisodique, et où elle survit aux changements de personnel." }
-  ],
-  donnee:[
-    { libelle:"Dispersée",
-      texte:"La même information vit à plusieurs endroits, sous plusieurs versions. La ressaisie n'est pas seulement du temps perdu : c'est aussi là que naissent les écarts entre ce que croit le bureau et ce que voit le terrain." },
-    { libelle:"Centralisée",
-      texte:"L'information est rassemblée au même endroit, mais elle ne circule pas d'elle-même d'un outil à l'autre. Vous avez éliminé la perte de documents, pas encore la double saisie ni les incohérences qu'elle entraîne." },
-    { libelle:"Connectée",
-      texte:"Vos systèmes s'échangent l'information sans intervention manuelle. Ce qui reste à gagner, c'est l'exploitation de cette donnée pour décider, et non plus seulement pour consigner ce qui s'est passé." },
-    { libelle:"Pilotée",
-      texte:"Votre donnée est structurée, circule seule et sert à décider. C'est précisément la condition qui rend l'intelligence artificielle utile chez vous plutôt que décorative." }
-  ],
-  position:[
-    { libelle:"En rattrapage",
-      texte:"Les exigences numériques qui apparaissent dans les appels d'offres sont un obstacle plutôt qu'un atout. À court terme, l'enjeu porte sur votre admissibilité aux mandats, pas encore sur votre différenciation." },
-    { libelle:"Dans la moyenne",
-      texte:"Vous répondez aux exigences courantes de votre marché sans vous en distinguer. La position est tenable aujourd'hui, mais la barre monte plus vite que la moyenne du secteur, en particulier du côté des donneurs d'ouvrage publics." },
-    { libelle:"En avance",
-      texte:"Vous devancez la majorité de vos pairs. Cet écart est un argument commercial que peu d'organisations pensent à formuler explicitement dans leurs offres de service." },
-    { libelle:"Référence",
-      texte:"Votre maturité vous distingue nettement de votre marché. L'enjeu devient de protéger cet écart et d'en faire un critère de sélection auprès de vos clients." }
-  ]
-};
+/* Les quatre paliers, pour les axes comme pour les sous-sections.
+   `slug` est la valeur interne des listes *_level dans HubSpot. */
+const NIVEAUX = [
+  { slug:"first_milestones",  libelle:"Premiers jalons" },
+  { slug:"momentum_building", libelle:"Élan amorcé" },
+  { slug:"well_advanced",     libelle:"Bien avancé" },
+  { slug:"leader",            libelle:"Chef de file" }
+];
 
-/* Un score se convertit en palier par sa moyenne par énoncé, quel que soit
-   le nombre d'énoncés : 12 pour le global, 4 par axe, 3 par lecture, 1 par cellule. */
-function rangDeScore(score, nbEnonces){
-  const moyenne = score / nbEnonces;
-  if(moyenne <= 2.0) return 0;
-  if(moyenne <= 3.0) return 1;
-  if(moyenne <= 4.0) return 2;
+/* Une moyenne par énoncé (1 à 5) se convertit en palier et en score sur 100. */
+function rangDeMoyenne(m){
+  if(m <= 2.0) return 0;
+  if(m <= 3.0) return 1;
+  if(m <= 4.0) return 2;
   return 3;
 }
+function scoreSur100(m){ return Math.round((m - 1) / 4 * 100); }
 
 /* ==========================================================================
-   5. ÉTAT
+   4. ÉTAT
    ========================================================================== */
 let etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoiEchoue:false };
 
@@ -333,25 +347,24 @@ const barre = document.getElementById("barre");
 const barreZone = document.getElementById("barre-zone");
 const compteur = document.getElementById("compteur");
 
-function famille(){
-  const c = CATEGORIES.find(x => x.valeur === etat.categorie);
-  return c ? c.famille : "conception";
-}
-function libelleAxe(axe){ return axe.cle === "bim" ? LIBELLE_BIM_PAR_FAMILLE[famille()] : axe.libelle; }
+function categorie(){ return CATEGORIES.find(c => c.valeur === etat.categorie) || CATEGORIES[0]; }
+function bimEvalue(){ return !!categorie().bim; }
+function axesEvalues(){ return AXES.filter(a => !a.bimSeulement || bimEvalue()); }
 
-/* La grille : 16 cases, parcourues axe par axe, lecture par lecture. */
-function grille(){
-  const source = {
-    entreprise:ENONCES_ENTREPRISE,
-    numerique:ENONCES_NUMERIQUE,
-    ia:ENONCES_IA,
-    bim:ENONCES_BIM[famille()]
-  };
-  const cases = [];
-  AXES.forEach(a => LECTURES.forEach(l => {
-    cases.push({ axe:a.cle, lecture:l.cle, cle:a.cle + "|" + l.cle, texte:source[a.cle][l.cle] });
-  }));
-  return cases;
+/* Les énoncés d'une sous-section, selon la famille pour le BIM. */
+function enoncesDe(section){
+  if(Array.isArray(section.enonces)) return section.enonces;
+  return section.enonces[categorie().famille] || section.enonces.conception;
+}
+
+/* La liste ordonnée des énoncés : axe par axe, sous-section par sous-section.
+   Le BIM vient en dernier et n'apparaît pas si l'activité ne l'implique pas. */
+function liste(){
+  const items = [];
+  axesEvalues().forEach(a => a.sections.forEach(s => enoncesDe(s).forEach((texte, i) => {
+    items.push({ axe:a.cle, section:s.cle, cle:s.cle + "|" + i, texte });
+  })));
+  return items;
 }
 
 function progression(pct, texte){
@@ -363,14 +376,14 @@ function progression(pct, texte){
 }
 
 /* ==========================================================================
-   6. ÉCRANS
+   5. ÉCRANS
    ========================================================================== */
 function ecranAccueil(){
   progression(null);
   scene.innerHTML = `
     <h1>Où en est votre organisation dans sa transformation numérique ?</h1>
-    <p class="plein">Seize énoncés, environ quatre minutes. Pour chacun, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
-    <p>Votre situation est ensuite lue sur quatre axes (gestion opérationnelle, transformation numérique, intégration de l'IA, maturité BIM) et sous quatre angles : état de fait, maturité de processus, circulation de la donnée, position concurrentielle. Les énoncés sur le BIM s'adaptent au type d'activité que vous exercez.</p>
+    <p class="plein">Environ six minutes. Pour chaque énoncé, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
+    <p>Votre situation est ensuite lue sur trois axes : gestion opérationnelle, intégration de l'IA et maturité BIM. Chaque axe se décompose en sous-sections qui indiquent précisément par où commencer. Le volet BIM s'adapte au type d'activité que vous exercez.</p>
     <div class="boutons"><button class="primaire" id="go">Commencer</button></div>
   `;
   document.getElementById("go").onclick = ecranProfil;
@@ -414,35 +427,32 @@ function ecranProfil(){
 }
 
 function ecranEnonce(){
-  const cases = grille();
-  const c = cases[etat.index];
+  const items = liste();
+  const c = items[etat.index];
   const axe = AXES.find(a => a.cle === c.axe);
-  const lecture = LECTURES.find(l => l.cle === c.lecture);
-  progression(Math.round((etat.index / cases.length) * 100), `Énoncé ${etat.index + 1} sur ${cases.length}`);
+  const section = axe.sections.find(s => s.cle === c.section);
+  progression(Math.round((etat.index / items.length) * 100), `Énoncé ${etat.index + 1} sur ${items.length}`);
 
   scene.innerHTML = `
-    <span class="axe-etiquette ${axe.classe}">${libelleAxe(axe)} · ${lecture.libelle}</span>
-    <div class="enonce">${c.texte}</div>
+    <span class="axe-etiquette axe-${axe.cle}">${axe.libelle} · ${section.libelle}</span>
+    <p class="enonce">${c.texte}</p>
     <div class="echelle">
       ${ECHELLE.map(e => `
         <button class="cran ${etat.reponses[c.cle]===e.note?"choisi":""}" data-note="${e.note}">
           <b>${e.note}</b><small>${e.ancre}</small>
         </button>`).join("")}
     </div>
-    <div class="ancres"><span>Pas du tout d'accord</span><span>Tout à fait d'accord</span></div>
-    <div class="boutons">
+    <div class="boutons" style="margin-top:18px">
       <button class="discret" id="retour">${etat.index === 0 ? "Modifier le profil" : "Énoncé précédent"}</button>
     </div>
   `;
-
   scene.querySelectorAll(".cran").forEach(el => {
     el.onclick = () => {
-      etat.reponses[c.cle] = parseInt(el.dataset.note, 10);
-      if(etat.index < cases.length - 1){ etat.index++; ecranEnonce(); }
+      etat.reponses[c.cle] = Number(el.dataset.note);
+      if(etat.index < items.length - 1){ etat.index++; ecranEnonce(); }
       else { calculer(); finaliser(); }
     };
   });
-
   document.getElementById("retour").onclick = () => {
     if(etat.index === 0) ecranProfil();
     else { etat.index--; ecranEnonce(); }
@@ -450,30 +460,26 @@ function ecranEnonce(){
 }
 
 /* ==========================================================================
-   7. CALCUL
-   Trois lectures du même jeu de 12 réponses : par axe, par dimension, et global.
+   6. CALCUL
+   Sous-section = moyenne de ses énoncés. Axe = moyenne de ses sous-sections.
+   Chaque niveau est converti en palier et en score sur 100. Pas de score global :
+   la recommandation vise l'axe le plus faible, puis sa sous-section la plus faible.
    ========================================================================== */
-function note(axe, lecture){ return etat.reponses[axe + "|" + lecture] || 0; }
-
 function calculer(){
-  const parAxe = {}, rangAxe = {};
-  AXES.forEach(a => {
-    parAxe[a.cle] = LECTURES.reduce((t,l) => t + note(a.cle, l.cle), 0);   // 4 à 20
-    rangAxe[a.cle] = rangDeScore(parAxe[a.cle], LECTURES.length);
+  const axes = axesEvalues().map(a => {
+    const sections = a.sections.map(s => {
+      const notes = enoncesDe(s).map((_, i) => etat.reponses[s.cle + "|" + i] || 0);
+      const moyenne = notes.reduce((t, n) => t + n, 0) / notes.length;
+      return { cle:s.cle, libelle:s.libelle, conseil:s.conseil, notes, moyenne,
+               score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
+    });
+    const moyenne = sections.reduce((t, s) => t + s.moyenne, 0) / sections.length;
+    return { cle:a.cle, libelle:a.libelle, couleur:a.couleur, niveaux:a.niveaux, sections, moyenne,
+             score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
   });
-
-  const parLecture = {}, rangLecture = {};
-  LECTURES.forEach(l => {
-    parLecture[l.cle] = AXES.reduce((t,a) => t + note(a.cle, l.cle), 0);   // 3 à 15
-    rangLecture[l.cle] = rangDeScore(parLecture[l.cle], AXES.length);
-  });
-
-  const global = AXES.reduce((t,a) => t + parAxe[a.cle], 0);               // 16 à 80
-  const palier = PALIERS[rangDeScore(global, AXES.length * LECTURES.length)];
-  const angle  = AXES.map(a => a.cle).sort((x,y) => parAxe[x] - parAxe[y])[0];
-  const angleLecture = LECTURES.map(l => l.cle).sort((x,y) => parLecture[x] - parLecture[y])[0];
-
-  etat.resultat = { global, parAxe, rangAxe, parLecture, rangLecture, palier, angle, angleLecture };
+  const axePrio = axes.slice().sort((x, y) => x.moyenne - y.moyenne)[0];
+  const sectionPrio = axePrio.sections.slice().sort((x, y) => x.moyenne - y.moyenne)[0];
+  etat.resultat = { axes, axePrio, sectionPrio, bim:bimEvalue() };
 }
 
 function detailReponses(){
@@ -481,34 +487,32 @@ function detailReponses(){
   const tai = TAILLES.find(t => t.valeur === etat.taille);
   const r = etat.resultat;
   const lignes = [
-    `Catégorie : ${cat ? cat.libelle : "n/d"}`,
-    `Taille : ${tai ? tai.libelle : "n/d"}`,
-    `Échelle : accord de 1 à 5. Grille 4 axes x 4 lectures.`,
+    `Diagnostic de maturité numérique · ${new Date().toISOString().split("T")[0]}`,
+    `Activité : ${cat ? cat.libelle : etat.categorie} · Taille : ${tai ? tai.libelle : etat.taille}`,
+    `Échelle : accord de 1 à 5. Score = (moyenne - 1) / 4 x 100.`,
+    r.bim ? "" : "Volet BIM non évalué (activité sans BIM).",
     ""
   ];
-  if(r){
-    lignes.push(`Score global : ${r.global}/${AXES.length * LECTURES.length * 5}`);
+  r.axes.forEach(a => {
+    lignes.push(`${a.libelle} : ${a.score}/100 · ${NIVEAUX[a.rang].libelle}`);
+    a.sections.forEach(s => {
+      lignes.push(`   ${s.libelle} : ${s.score}/100 · ${NIVEAUX[s.rang].libelle}`);
+      enoncesDe(AXES.find(x => x.cle === a.cle).sections.find(x => x.cle === s.cle)).forEach((texte, i) => {
+        lignes.push(`      ${s.notes[i]}/5 : ${texte}`);
+      });
+    });
     lignes.push("");
-    lignes.push("Lecture par dimension");
-    LECTURES.forEach(l => lignes.push(`   ${l.libelle} (${r.parLecture[l.cle]}/${AXES.length * 5}) : ${VERDICTS[l.cle][r.rangLecture[l.cle]].libelle}`));
-    lignes.push("");
-    lignes.push("Lecture par axe");
-    AXES.forEach(a => lignes.push(`   ${libelleAxe(a)} (${r.parAxe[a.cle]}/20) : ${VERDICTS.etat_de_fait[r.rangAxe[a.cle]].libelle}`));
-    lignes.push("");
-  }
-  lignes.push("Réponses détaillées");
-  grille().forEach((c,i) => {
-    lignes.push(`   Q${i+1} [${c.axe} / ${c.lecture}] ${etat.reponses[c.cle]}/5 : ${c.texte}`);
   });
-  return lignes.join("\n");
+  lignes.push(`Priorité : ${r.axePrio.libelle} > ${r.sectionPrio.libelle}`);
+  return lignes.filter(l => l !== null).join("\n");
 }
 
 /* ==========================================================================
-   8. GATE ET ENVOI HUBSPOT
+   7. CONTACT ET ENVOI HUBSPOT
+   L'utilisateur s'est identifié à la connexion au site : on envoie le résultat
+   avec les informations du compte, sans bloquer l'affichage. Sans compte, un
+   écran de coordonnées s'affiche avant les résultats.
    ========================================================================== */
-/* L'utilisateur s'est déjà identifié à la connexion au site : on saute
-   l'écran de coordonnées et on envoie le résultat à HubSpot avec les
-   informations du compte, sans bloquer l'affichage des résultats. */
 function finaliser(){
   progression(100, "Terminé");
   let contact = { prenom:"", nom:"", entreprise:"", courriel:"" };
@@ -521,12 +525,11 @@ function finaliser(){
       contact.courriel = (u.courriel || "").trim();
     }
   } catch(e){}
-  if(contact.courriel){
-    envoyerHubSpot(contact).catch(e => {
-      etat.envoiEchoue = true;
-      console.error("Envoi HubSpot échoué :", e);
-    });
-  }
+  if(!contact.courriel){ ecranGate(); return; }
+  envoyerHubSpot(contact).catch(e => {
+    etat.envoiEchoue = true;
+    console.error("Envoi HubSpot échoué :", e);
+  });
   ecranResultats();
 }
 
@@ -534,7 +537,7 @@ function ecranGate(){
   progression(100, "Terminé");
   scene.innerHTML = `
     <h2>Votre lecture est prête</h2>
-    <p>Indiquez où vous joindre et vous verrez votre situation lue sous quatre angles, pour chacun des quatre axes, avec celui à prioriser.</p>
+    <p>Indiquez où vous joindre et vous verrez vos scores sur chaque axe, avec la sous-section à prioriser.</p>
     <label class="champ" for="prenom">Prénom</label>
     <input type="text" id="prenom" autocomplete="given-name">
     <label class="champ" for="nom">Nom</label>
@@ -549,11 +552,9 @@ function ecranGate(){
     </div>
     <div class="boutons"><button class="primaire" id="voir" disabled>Voir ma lecture complète</button></div>
   `;
-
   const champs = ["prenom","nom","entreprise","courriel"].map(id => document.getElementById(id));
   const consent = document.getElementById("consent");
   const voir = document.getElementById("voir");
-
   const valide = () => {
     const courriel = document.getElementById("courriel").value.trim();
     voir.disabled = !(champs.every(c => c.value.trim().length > 0)
@@ -562,7 +563,6 @@ function ecranGate(){
   };
   champs.forEach(c => c.oninput = valide);
   consent.onchange = valide;
-
   voir.onclick = async () => {
     voir.disabled = true;
     voir.textContent = "Envoi en cours";
@@ -581,30 +581,39 @@ function ecranGate(){
   };
 }
 
-async function envoyerHubSpot(contact){
+/* Les champs envoyés au formulaire HubSpot : un par propriété de contact.
+   Les scores BIM ne sont envoyés que si le volet a été évalué. */
+function champsHubSpot(contact){
   const r = etat.resultat;
-  const base = [
-    { name:"email",     value:contact.courriel },
-    { name:"firstname", value:contact.prenom },
-    { name:"lastname",  value:contact.nom },
-    { name:"company",   value:contact.entreprise },
-    { name:"maturite_score_global",      value:String(r.global) },
-    { name:"maturite_niveau",            value:r.palier.slug },
-    { name:"maturite_angle_prioritaire", value:r.angle },
-    { name:"maturite_axe_bim",           value:String(r.parAxe.bim) },
-    { name:"maturite_axe_ia",            value:String(r.parAxe.ia) },
-    { name:"maturite_axe_entreprise",    value:String(r.parAxe.entreprise) },
-    { name:"maturite_reponses_json",     value:detailReponses() },
-    { name:"maturite_date",              value:new Date().toISOString().split("T")[0] }
+  const champs = [
+    { name:"email",            value:contact.courriel },
+    { name:"firstname",        value:contact.prenom },
+    { name:"lastname",         value:contact.nom },
+    { name:"company",          value:contact.entreprise },
+    { name:"company_category", value:etat.categorie },
+    { name:"company_size",     value:etat.taille },
+    { name:"assessment_date",  value:new Date().toISOString().split("T")[0] }
   ];
-  const profil = [
-    { name:"maturite_categorie", value:etat.categorie },
-    { name:"maturite_taille",    value:etat.taille }
-  ];
+  r.axes.forEach(a => {
+    champs.push({ name:a.cle + "_score", value:String(a.score) });
+    champs.push({ name:a.cle + "_level", value:NIVEAUX[a.rang].slug });
+    a.sections.forEach(s => champs.push({ name:s.cle + "_score", value:String(s.score) }));
+  });
+  champs.push({ name:"priority_axis",       value:r.axePrio.cle });
+  champs.push({ name:"priority_subsection", value:r.sectionPrio.cle });
+  champs.push({ name:"assessment_answers",  value:detailReponses() });
+  return champs.filter(c => c.value !== "" && c.value != null);
+}
 
+async function envoyerHubSpot(contact){
+  if(!CONFIG.PORTAL_ID || !CONFIG.FORM_GUID){
+    console.info("HubSpot non configuré : résultat non envoyé.");
+    return;
+  }
+  const tous = champsHubSpot(contact);
   async function soumettre(champs){
     const reponse = await fetch(
-      `https://api.hsforms.com/submissions/v3/integration/submit/${CONFIG.PORTAL_ID}/${CONFIG.FORM_GUID}`,
+      `https://${CONFIG.HSFORMS_HOST}/submissions/v3/integration/submit/${CONFIG.PORTAL_ID}/${CONFIG.FORM_GUID}`,
       { method:"POST", headers:{ "Content-Type":"application/json" },
         body:JSON.stringify({
           fields:champs,
@@ -616,86 +625,62 @@ async function envoyerHubSpot(contact){
     );
     if(!reponse.ok) throw new Error("HTTP " + reponse.status + " " + await reponse.text());
   }
-
-  if(!CONFIG.PROPRIETES_PROFIL_ACTIVES) return soumettre(base);
-
   try {
-    await soumettre(base.concat(profil));
+    await soumettre(tous);
   } catch(e){
-    // HubSpot rejette la soumission entière si un champ n'existe pas sur le
-    // formulaire. On réessaie sans le profil pour ne pas perdre le prospect,
-    // en laissant une trace dans la console.
-    console.warn("Champs de profil refusés par HubSpot, nouvelle tentative sans eux. Créez maturite_categorie et maturite_taille et ajoutez-les au formulaire.", e);
-    await soumettre(base);
+    // HubSpot rejette toute la soumission si un champ manque au formulaire.
+    // On réessaie avec le contact et le détail texte seulement, pour ne pas perdre le prospect.
+    console.warn("Soumission complète refusée, nouvelle tentative avec les champs de base. Vérifiez que toutes les propriétés sont sur le formulaire.", e);
+    const base = ["email","firstname","lastname","company","assessment_answers"];
+    await soumettre(tous.filter(c => base.includes(c.name)));
   }
 }
 
 /* ==========================================================================
-   9. RÉSULTATS
+   8. RÉSULTATS
    ========================================================================== */
 function ecranResultats(){
   const r = etat.resultat;
-  const axePrio = AXES.find(a => a.cle === r.angle);
-  const lecturePrio = LECTURES.find(l => l.cle === r.angleLecture);
 
-  // Bloc principal : une dimension, un verdict, une explication.
-  const dimensions = LECTURES.map(l => {
-    const v = VERDICTS[l.cle][r.rangLecture[l.cle]];
-    return `
-      <div class="lecture-bloc">
-        <div class="lecture-entete">
-          <span class="lecture-cle">${l.libelle}</span>
-          <span class="lecture-val">${v.libelle}</span>
-        </div>
-        <div class="lecture-note">${l.question} &nbsp;·&nbsp; ${r.parLecture[l.cle]} / ${AXES.length * 5}</div>
-        <p class="lecture-texte">${v.texte}</p>
-      </div>`;
-  }).join("");
+  const cartes = r.axes.map(a => `
+    <div class="score-carte ${a.cle === r.axePrio.cle ? "prio" : ""}">
+      <div class="score-nom">${a.libelle}</div>
+      <div class="score-chiffre" style="color:${a.couleur}">${a.score}<span class="score-sur"> / 100</span></div>
+      <div class="score-niveau">${NIVEAUX[a.rang].libelle}</div>
+      <div class="axe-jauge"><span style="width:${a.score}%;background:${a.couleur}"></span></div>
+    </div>`).join("");
 
-  // Matrice complète : chaque cellule vient d'un énoncé précis.
-  const matrice = `
-    <table class="matrice">
-      <thead>
-        <tr><th></th>
-          ${AXES.map(a => `<th><span class="col-axe">${libelleAxe(a)}</span><span class="col-note">${r.parAxe[a.cle]} / 20</span></th>`).join("")}
-        </tr>
-      </thead>
-      <tbody>
-        ${LECTURES.map(l => `
-          <tr><th scope="row">${l.libelle}</th>
-            ${AXES.map(a => {
-              const rang = rangDeScore(note(a.cle, l.cle), 1);
-              return `<td${a.cle === r.angle ? ' class="col-prio"' : ""}>${VERDICTS[l.cle][rang].libelle}</td>`;
-            }).join("")}
-          </tr>`).join("")}
-      </tbody>
-    </table>`;
-
-  const blocsMobile = AXES.map(a => `
-    <div class="bloc-axe${a.cle === r.angle ? " bloc-prio" : ""}">
-      <div class="axe-titre"><span>${libelleAxe(a)}</span><span>${r.parAxe[a.cle]} / 20</span></div>
-      <div class="axe-jauge"><span style="width:${(r.parAxe[a.cle]/20)*100}%;background:${a.couleur}"></span></div>
-      ${LECTURES.map(l => {
-        const rang = rangDeScore(note(a.cle, l.cle), 1);
-        return `<div class="paire"><span>${l.libelle}</span><span>${VERDICTS[l.cle][rang].libelle}</span></div>`;
+  const blocs = r.axes.map(a => `
+    <div class="bloc-axe ${a.cle === r.axePrio.cle ? "bloc-prio" : ""}">
+      <div class="bloc-entete">
+        <h3>${a.libelle}</h3>
+        <span class="bloc-niveau">${a.score} / 100 · ${NIVEAUX[a.rang].libelle}</span>
+      </div>
+      <p class="bloc-texte">${a.niveaux[a.rang]}</p>
+      ${a.sections.map(s => {
+        const prio = a.cle === r.axePrio.cle && s.cle === r.sectionPrio.cle;
+        return `
+        <div class="sous ${prio ? "prio" : ""}">
+          <span class="sous-nom">${s.libelle}</span>
+          <div class="axe-jauge"><span style="width:${s.score}%;background:${a.couleur}"></span></div>
+          <span class="sous-val">${s.score} · ${NIVEAUX[s.rang].libelle}</span>
+        </div>`;
       }).join("")}
     </div>`).join("");
 
   scene.innerHTML = `
-    <div class="score-bloc"><div class="score-chiffre">${r.global}<span class="score-sur"> / ${AXES.length * LECTURES.length * 5}</span></div></div>
+    <h2>Vos scores de maturité</h2>
+    <p>Chaque axe est calculé sur ses propres sous-sections. Il est normal qu'ils ne se situent pas au même niveau : c'est l'écart entre eux qui indique par où commencer.</p>
+    <div class="scores ${r.axes.length === 2 ? "deux" : ""}">${cartes}</div>
+    ${r.bim ? "" : `<div class="note-bim">Le volet Maturité BIM n'a pas été évalué : votre type d'activité n'implique pas la maquette numérique.</div>`}
 
-    <h3>Votre situation, sous quatre angles</h3>
-    <p>Chaque angle est calculé sur des énoncés différents. Il est normal qu'ils ne se situent pas au même niveau : c'est précisément l'écart entre eux qui indique par où commencer.</p>
-    ${dimensions}
-
-    <h3 style="margin-top:34px">La grille complète</h3>
-    <p>Croisement des quatre angles et des quatre axes. La colonne mise en évidence est celle où votre score est le plus faible.</p>
-    <div class="vue-large">${matrice}</div>
-    <div class="vue-etroite">${blocsMobile}</div>
+    <h3>Le détail par sous-section</h3>
+    <p>Chaque sous-section est notée sur 100. La ligne mise en évidence est celle où votre score est le plus faible dans l'axe à prioriser.</p>
+    ${blocs}
 
     <div class="encadre">
       <h3>Par où commencer</h3>
-      <p>Votre point d'appui le plus faible se situe sur l'axe <strong>${libelleAxe(axePrio)}</strong>, et transversalement sur la dimension <strong>${lecturePrio.libelle.toLowerCase()}</strong>. ${axePrio.conseil}</p>
+      <p>Votre point d'appui le plus faible se situe sur l'axe <strong>${r.axePrio.libelle}</strong>, et plus précisément sur <strong>${r.sectionPrio.libelle.toLowerCase()}</strong>. ${r.sectionPrio.conseil}</p>
     </div>
 
     <div class="boutons" data-html2canvas-ignore>
@@ -717,13 +702,13 @@ function ecranResultats(){
 ecranAccueil();
 
 /* ==========================================================================
-   10. INTÉGRATION EN IFRAME
-   Communique la hauteur réelle du contenu à la page WordPress qui l'héberge,
-   pour que l'iframe s'ajuste au lieu d'afficher une barre de défilement interne.
+   9. INTÉGRATION EN IFRAME
+   Communique la hauteur réelle du contenu à une page qui l'héberge, pour que
+   l'iframe s'ajuste au lieu d'afficher une barre de défilement interne.
    Sans effet si la page est ouverte directement.
    ========================================================================== */
 (function(){
-  if(window.parent === window) return;          // pas dans une iframe
+  if(window.parent === window) return;
   let derniere = 0;
   function annoncer(){
     const h = Math.ceil(document.documentElement.getBoundingClientRect().height) + 8;
@@ -733,13 +718,13 @@ ecranAccueil();
   }
   window.addEventListener("load", annoncer);
   if(window.ResizeObserver) new ResizeObserver(annoncer).observe(document.body);
-  setInterval(annoncer, 500);                   // filet de sécurité
+  setInterval(annoncer, 500);
   annoncer();
 })();
 </script>
 
 <!-- ==========================================================================
-     11. TÉLÉCHARGEMENT PDF
+     10. TÉLÉCHARGEMENT PDF
      Convertit la carte de résultats en PDF téléchargeable (html2pdf).
      En cas d'échec (hors ligne, blocage du CDN), on retombe sur l'impression
      du navigateur, qui permet aussi d'enregistrer en PDF.
