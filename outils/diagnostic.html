@@ -107,6 +107,10 @@
 
   .consentement{display:flex;gap:10px;align-items:flex-start;margin-top:20px;font-size:13px;color:var(--texte-doux)}
   .consentement input{margin-top:3px;flex-shrink:0}
+
+  .envoi-note{font-size:14px;color:var(--texte);background:#F6F2EF;border-radius:8px;padding:12px 16px;margin:24px 0 0}
+  .envoi-ok{background:#E9F2F1;color:var(--sarcelle)}
+  .envoi-echec{background:#F6EDEB;color:var(--rouille)}
 </style>
 </head>
 <body>
@@ -129,8 +133,7 @@
 const CONFIG = {
   PORTAL_ID : "",                                          // numéro du portail HubSpot (Hub ID)
   FORM_GUID : "",                                          // formulaire « Digital Maturity Assessment »
-  HSFORMS_HOST : "api.hsforms.com",                        // api-eu1.hsforms.com pour un portail hébergé en Europe
-  URL_RENDEZVOUS : "https://meetings.hubspot.com/a-remplacer"
+  HSFORMS_HOST : "api.hsforms.com"                         // api-eu1.hsforms.com pour un portail hébergé en Europe
 };
 
 /* ==========================================================================
@@ -293,7 +296,7 @@ function scoreSur100(m){ return Math.round((m - 1) / 4 * 100); }
 /* ==========================================================================
    4. ÉTAT
    ========================================================================== */
-let etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoiEchoue:false };
+let etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null };
 
 const scene = document.getElementById("scene");
 const barre = document.getElementById("barre");
@@ -465,8 +468,8 @@ function detailReponses(){
    avec les informations du compte, sans bloquer l'affichage. Sans compte, un
    écran de coordonnées s'affiche avant les résultats.
    ========================================================================== */
-function finaliser(){
-  progression(100, "Terminé");
+/* Le contact connecté au site (nom complet séparé en prénom et nom). */
+function contactConnecte(){
   let contact = { prenom:"", nom:"", entreprise:"", courriel:"" };
   try {
     const u = JSON.parse(localStorage.getItem("archiaid_user") || "null");
@@ -477,19 +480,44 @@ function finaliser(){
       contact.courriel = (u.courriel || "").trim();
     }
   } catch(e){}
-  if(!contact.courriel){ ecranGate(); return; }
-  envoyerHubSpot(contact).catch(e => {
-    etat.envoiEchoue = true;
-    console.error("Envoi HubSpot échoué :", e);
-  });
+  return contact;
+}
+
+function finaliser(){
+  progression(100, "Terminé");
   ecranResultats();
+}
+
+/* Bouton « Envoyer » : soumet le résultat à HubSpot, qui l'expédie au contact
+   par courriel. Sans compte connu, on demande d'abord les coordonnées. */
+async function envoyerResultats(bouton){
+  const contact = contactConnecte();
+  if(!contact.courriel){ ecranGate(); return; }
+  bouton.disabled = true;
+  bouton.textContent = "Envoi en cours…";
+  try {
+    await envoyerHubSpot(contact);
+    etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
+  } catch(e){
+    etat.envoye = "echec";
+    console.error("Envoi HubSpot échoué :", e);
+  }
+  ecranResultats();
+}
+
+function messageEnvoi(){
+  const contact = contactConnecte();
+  if(etat.envoye === "ok")      return `<p class="envoi-note envoi-ok">Résultats envoyés. Vous recevrez votre rapport à ${contact.courriel}.</p>`;
+  if(etat.envoye === "inactif") return `<p class="envoi-note">Résultats enregistrés. L'envoi par courriel sera actif une fois la connexion à HubSpot configurée.</p>`;
+  if(etat.envoye === "echec")   return `<p class="envoi-note envoi-echec">L'envoi n'a pas fonctionné. Réessayez dans un instant ou écrivez-nous à Info@archiaid.ca.</p>`;
+  return "";
 }
 
 function ecranGate(){
   progression(100, "Terminé");
   scene.innerHTML = `
-    <h2>Votre lecture est prête</h2>
-    <p>Indiquez où vous joindre et vous verrez vos scores sur chaque axe, avec la sous-section à prioriser.</p>
+    <h2>Où vous envoyer vos résultats ?</h2>
+    <p>Indiquez où vous joindre : vous recevrez votre rapport par courriel.</p>
     <label class="champ" for="prenom">Prénom</label>
     <input type="text" id="prenom" autocomplete="given-name">
     <label class="champ" for="nom">Nom</label>
@@ -502,7 +530,7 @@ function ecranGate(){
       <input type="checkbox" id="consent">
       <label for="consent">J'accepte que Solutions Archi Aid inc. conserve ces renseignements pour me transmettre mon résultat et communiquer avec moi à ce sujet. Je peux retirer ce consentement en tout temps en écrivant à l'adresse indiquée dans les communications reçues.</label>
     </div>
-    <div class="boutons"><button class="primaire" id="voir" disabled>Voir ma lecture complète</button></div>
+    <div class="boutons"><button class="primaire" id="voir" disabled>Envoyer</button></div>
   `;
   const champs = ["prenom","nom","entreprise","courriel"].map(id => document.getElementById(id));
   const consent = document.getElementById("consent");
@@ -518,15 +546,18 @@ function ecranGate(){
   voir.onclick = async () => {
     voir.disabled = true;
     voir.textContent = "Envoi en cours";
+    const contact = {
+      prenom:document.getElementById("prenom").value.trim(),
+      nom:document.getElementById("nom").value.trim(),
+      entreprise:document.getElementById("entreprise").value.trim(),
+      courriel:document.getElementById("courriel").value.trim()
+    };
+    try { localStorage.setItem("archiaid_user", JSON.stringify({ nom:(contact.prenom + " " + contact.nom).trim(), courriel:contact.courriel })); } catch(e){}
     try {
-      await envoyerHubSpot({
-        prenom:document.getElementById("prenom").value.trim(),
-        nom:document.getElementById("nom").value.trim(),
-        entreprise:document.getElementById("entreprise").value.trim(),
-        courriel:document.getElementById("courriel").value.trim()
-      });
+      await envoyerHubSpot(contact);
+      etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
     } catch(e){
-      etat.envoiEchoue = true;
+      etat.envoye = "echec";
       console.error("Envoi HubSpot échoué :", e);
     }
     ecranResultats();
@@ -629,18 +660,16 @@ function ecranResultats(){
     <p>Chaque sous-section est notée sur 100. Dans chaque axe, la ligne mise en évidence est celle où votre score est le plus faible : c'est par là qu'il faut commencer.</p>
     ${blocs}
 
+    ${messageEnvoi()}
     <div class="boutons" data-html2canvas-ignore>
-      <button class="primaire" id="pdf">Télécharger en PDF</button>
-      <button class="primaire" id="rdv">Réserver une rencontre</button>
+      <button class="primaire" id="envoyer" ${etat.envoye === "ok" ? "disabled" : ""}>${etat.envoye === "ok" ? "Envoyé" : "Envoyer"}</button>
       <button class="discret" id="refaire">Refaire le diagnostic</button>
     </div>
   `;
 
-  document.getElementById("pdf").onclick = () =>
-    telechargerPDF(".carte", "ArchiAid-Diagnostic-Maturite.pdf", document.getElementById("pdf"));
-  document.getElementById("rdv").onclick = () => window.open(CONFIG.URL_RENDEZVOUS, "_blank");
+  document.getElementById("envoyer").onclick = (e) => envoyerResultats(e.currentTarget);
   document.getElementById("refaire").onclick = () => {
-    etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoiEchoue:false };
+    etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null };
     ecranAccueil();
   };
 }
