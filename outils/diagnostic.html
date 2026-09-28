@@ -101,6 +101,9 @@
   .encadre{background:#F6F2EF;border-left:3px solid var(--rouille);padding:18px 20px;border-radius:0 8px 8px 0;margin:24px 0}
   .encadre h3{color:var(--rouille)}
   .encadre p{margin-bottom:0;color:var(--texte)}
+  .encadre-axe{margin:16px 0 0;padding:14px 16px}
+  .encadre-axe h3{font-size:14px;margin-bottom:4px}
+  .encadre-axe p{font-size:14px}
 
   .consentement{display:flex;gap:10px;align-items:flex-start;margin-top:20px;font-size:13px;color:var(--texte-doux)}
   .consentement input{margin-top:3px;flex-shrink:0}
@@ -413,7 +416,7 @@ function ecranEnonce(){
    6. CALCUL
    Sous-section = moyenne de ses énoncés. Axe = moyenne de ses sous-sections.
    Chaque niveau est converti en palier et en score sur 100. Pas de score global :
-   la recommandation vise l'axe le plus faible, puis sa sous-section la plus faible.
+   chaque axe reçoit sa propre recommandation, sur sa sous-section la plus faible.
    ========================================================================== */
 function calculer(){
   const axes = axesEvalues().map(a => {
@@ -424,12 +427,11 @@ function calculer(){
                score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
     });
     const moyenne = sections.reduce((t, s) => t + s.moyenne, 0) / sections.length;
-    return { cle:a.cle, libelle:a.libelle, couleur:a.couleur, niveaux:a.niveaux, sections, moyenne,
+    const prio = sections.slice().sort((x, y) => x.moyenne - y.moyenne)[0];   // sous-section la plus faible de l'axe
+    return { cle:a.cle, libelle:a.libelle, couleur:a.couleur, niveaux:a.niveaux, sections, moyenne, prio,
              score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
   });
-  const axePrio = axes.slice().sort((x, y) => x.moyenne - y.moyenne)[0];
-  const sectionPrio = axePrio.sections.slice().sort((x, y) => x.moyenne - y.moyenne)[0];
-  etat.resultat = { axes, axePrio, sectionPrio, bim:bimEvalue() };
+  etat.resultat = { axes, bim:bimEvalue() };
 }
 
 function detailReponses(){
@@ -453,7 +455,7 @@ function detailReponses(){
     });
     lignes.push("");
   });
-  lignes.push(`Priorité : ${r.axePrio.libelle} > ${r.sectionPrio.libelle}`);
+  r.axes.forEach(a => lignes.push(`Priorité ${a.libelle} : ${a.prio.libelle}`));
   return lignes.filter(l => l !== null).join("\n");
 }
 
@@ -588,7 +590,7 @@ function ecranResultats(){
   const r = etat.resultat;
 
   const cartes = r.axes.map(a => `
-    <div class="score-carte ${a.cle === r.axePrio.cle ? "prio" : ""}">
+    <div class="score-carte">
       <div class="score-nom">${a.libelle}</div>
       <div class="score-chiffre" style="color:${a.couleur}">${a.score}<span class="score-sur"> / 100</span></div>
       <div class="score-niveau">${NIVEAUX[a.rang].libelle}</div>
@@ -596,14 +598,14 @@ function ecranResultats(){
     </div>`).join("");
 
   const blocs = r.axes.map(a => `
-    <div class="bloc-axe ${a.cle === r.axePrio.cle ? "bloc-prio" : ""}">
+    <div class="bloc-axe">
       <div class="bloc-entete">
         <h3>${a.libelle}</h3>
         <span class="bloc-niveau">${a.score} / 100 · ${NIVEAUX[a.rang].libelle}</span>
       </div>
       <p class="bloc-texte">${a.niveaux[a.rang]}</p>
       ${a.sections.map(s => {
-        const prio = a.cle === r.axePrio.cle && s.cle === r.sectionPrio.cle;
+        const prio = s.cle === a.prio.cle;
         return `
         <div class="sous ${prio ? "prio" : ""}">
           <span class="sous-nom">${s.libelle}</span>
@@ -611,6 +613,10 @@ function ecranResultats(){
           <span class="sous-val">${s.score} · ${NIVEAUX[s.rang].libelle}</span>
         </div>`;
       }).join("")}
+      <div class="encadre encadre-axe">
+        <h3>Par où commencer</h3>
+        <p>Votre point d'appui le plus faible sur cet axe est <strong>${a.prio.libelle.toLowerCase()}</strong>. ${a.prio.conseil}</p>
+      </div>
     </div>`).join("");
 
   scene.innerHTML = `
@@ -620,13 +626,8 @@ function ecranResultats(){
     ${r.bim ? "" : `<div class="note-bim">Le volet Maturité BIM n'a pas été évalué : votre type d'activité n'implique pas la maquette numérique.</div>`}
 
     <h3>Le détail par sous-section</h3>
-    <p>Chaque sous-section est notée sur 100. La ligne mise en évidence est celle où votre score est le plus faible dans l'axe à prioriser.</p>
+    <p>Chaque sous-section est notée sur 100. Dans chaque axe, la ligne mise en évidence est celle où votre score est le plus faible : c'est par là qu'il faut commencer.</p>
     ${blocs}
-
-    <div class="encadre">
-      <h3>Par où commencer</h3>
-      <p>Votre point d'appui le plus faible se situe sur l'axe <strong>${r.axePrio.libelle}</strong>, et plus précisément sur <strong>${r.sectionPrio.libelle.toLowerCase()}</strong>. ${r.sectionPrio.conseil}</p>
-    </div>
 
     <div class="boutons" data-html2canvas-ignore>
       <button class="primaire" id="pdf">Télécharger en PDF</button>
