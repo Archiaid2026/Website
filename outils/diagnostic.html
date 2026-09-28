@@ -229,7 +229,7 @@ const ECHELLE = [
    ========================================================================== */
 const AXES = [
   {
-    cle:"operational_management", libelle:{ fr:"Gestion opérationnelle", en:"Operational management" }, couleur:"var(--acier)",
+    cle:"operational_management", paliers:{ fr:["Improvisée", "Encadrée", "Structurée", "Pilotée"], en:["Improvised", "Framed", "Structured", "Data-driven"] }, libelle:{ fr:"Gestion opérationnelle", en:"Operational management" }, couleur:"var(--acier)",
     niveaux:{
       fr:[
         "Le fonctionnement repose sur des personnes plutôt que sur des systèmes. L'information existe, mais il faut savoir à qui la demander.",
@@ -245,7 +245,7 @@ const AXES = [
       ]
     },
     sections:[
-      { cle:"visibility", libelle:{ fr:"Visibilité et contrôle", en:"Visibility and control" },
+      { cle:"visibility", paliers:{ fr:["Limitée", "Partielle", "Claire", "Temps réel"], en:["Limited", "Partial", "Clear", "Real-time"] }, libelle:{ fr:"Visibilité et contrôle", en:"Visibility and control" },
         enonces:{
           fr:[ "J'ai une vue d'ensemble de l'exécution de mes projets en cours sans avoir à consulter chaque personne.",
                "L'avancement et les coûts de nos projets sont à jour et consultables en tout temps, pas seulement à la réunion hebdomadaire." ],
@@ -254,7 +254,7 @@ const AXES = [
         },
         conseil:{ fr:"Mettre en place un tableau de bord de projets alimenté par vos outils existants, revu à fréquence fixe.",
                   en:"Set up a project dashboard fed by your existing tools and reviewed at a fixed frequency." } },
-      { cle:"process_maturity", libelle:{ fr:"Maturité des processus", en:"Process maturity" },
+      { cle:"process_maturity", paliers:{ fr:["Informels", "Documentés", "Appliqués", "Mesurés"], en:["Informal", "Documented", "Applied", "Measured"] }, libelle:{ fr:"Maturité des processus", en:"Process maturity" },
         enonces:{
           fr:[ "Nos façons de faire sont documentées et appliquées de la même manière d'un projet à l'autre.",
                "Nos processus sont mesurés et révisés selon un cycle défini, pas seulement lorsqu'un problème survient." ],
@@ -263,7 +263,7 @@ const AXES = [
         },
         conseil:{ fr:"Documenter les trois processus les plus fréquents et associer à chacun un indicateur suivi chaque mois.",
                   en:"Document your three most frequent processes and attach a monthly indicator to each one." } },
-      { cle:"system_centralization", libelle:{ fr:"Centralisation des systèmes", en:"System centralization" },
+      { cle:"system_centralization", paliers:{ fr:["Dispersés", "Partagés", "Centralisés", "Unifiés"], en:["Scattered", "Shared", "Centralized", "Unified"] }, libelle:{ fr:"Centralisation des systèmes", en:"System centralization" },
         enonces:{
           fr:[ "Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement.",
                "Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan." ],
@@ -275,7 +275,7 @@ const AXES = [
     ]
   },
   {
-    cle:"ai_integration", libelle:{ fr:"Intégration de l'IA", en:"AI integration" }, couleur:"var(--sarcelle)",
+    cle:"ai_integration", paliers:{ fr:["Absente", "Exploratoire", "Encadrée", "Intégrée"], en:["Absent", "Exploratory", "Governed", "Embedded"] }, libelle:{ fr:"Intégration de l'IA", en:"AI integration" }, couleur:"var(--sarcelle)",
     niveaux:{
       fr:[
         "L'IA est absente ou à l'essai chez quelques personnes, sans cadre. Le risque tient surtout aux données qui circulent sans règles.",
@@ -291,7 +291,7 @@ const AXES = [
       ]
     },
     sections:[
-      { cle:"ai_adoption", libelle:{ fr:"Adoption", en:"Adoption" },
+      { cle:"ai_adoption", paliers:{ fr:["Nulle", "Individuelle", "Par équipe", "Généralisée"], en:["None", "Individual", "Team-wide", "Company-wide"] }, libelle:{ fr:"Adoption", en:"Adoption" },
         enonces:{
           fr:[ "Mes équipes utilisent des outils d'intelligence artificielle dans leur travail courant, pas seulement à l'essai.",
                "L'usage de l'IA est répandu dans plusieurs équipes, pas porté par une ou deux personnes." ],
@@ -300,7 +300,7 @@ const AXES = [
         },
         conseil:{ fr:"Identifier deux tâches répétitives par équipe et y introduire un outil d'IA avec un accompagnement court.",
                   en:"Identify two repetitive tasks per team and introduce an AI tool for them with short guidance." } },
-      { cle:"ai_governance", libelle:{ fr:"Gouvernance", en:"Governance" },
+      { cle:"ai_governance", paliers:{ fr:["Aucune", "Implicite", "Écrite", "Appliquée"], en:["None", "Implicit", "Written", "Enforced"] }, libelle:{ fr:"Gouvernance", en:"Governance" },
         enonces:{
           fr:[ "Nous avons des règles écrites sur les informations qui peuvent être soumises à un outil d'IA externe.",
                "Une personne est responsable des choix d'outils d'IA et de leurs usages dans l'entreprise." ],
@@ -309,7 +309,7 @@ const AXES = [
         },
         conseil:{ fr:"Rédiger une politique d'usage d'une page : données permises, outils approuvés, personne responsable.",
                   en:"Write a one-page usage policy: permitted data, approved tools, responsible person." } },
-      { cle:"data_readiness", libelle:{ fr:"Préparation des données", en:"Data readiness" },
+      { cle:"data_readiness", paliers:{ fr:["Éparpillées", "Accessibles", "Structurées", "Exploitables"], en:["Scattered", "Accessible", "Structured", "AI-ready"] }, libelle:{ fr:"Préparation des données", en:"Data readiness" },
         enonces:{
           fr:[ "Nos données de projet sont assez structurées et centralisées pour être exploitées par un outil d'IA.",
                "L'historique de nos projets est accessible et consultable, pas enfoui dans des courriels et des dossiers personnels." ],
@@ -321,7 +321,7 @@ const AXES = [
     ]
   },
   {
-    cle:"bim_maturity", libelle:{ fr:"Maturité BIM", en:"BIM maturity" }, couleur:"var(--rouille)", bimSeulement:true,
+    cle:"bim_maturity", paliers:{ fr:["Subi", "Pratiqué", "Maîtrisé", "Stratégique"], en:["Imposed", "Practised", "Mastered", "Strategic"] }, libelle:{ fr:"Maturité BIM", en:"BIM maturity" }, couleur:"var(--rouille)", bimSeulement:true,
     niveaux:{
       fr:[
         "Le BIM est subi plutôt que maîtrisé : la maquette existe parfois, mais le travail réel se fait encore en 2D ou sur papier.",
@@ -337,7 +337,7 @@ const AXES = [
       ]
     },
     sections:[
-      { cle:"bim_process", libelle:{ fr:"Processus BIM", en:"BIM process" },
+      { cle:"bim_process", paliers:{ fr:["Absent", "Au cas par cas", "Formalisé", "Systématique"], en:["None", "Ad hoc", "Formalized", "Systematic"] }, libelle:{ fr:"Processus BIM", en:"BIM process" },
         enonces:{
           conception:{
             fr:[ "Chaque mandat démarre avec un plan d'exécution BIM qui définit les livrables et les niveaux de détail par phase.",
@@ -360,7 +360,7 @@ const AXES = [
         },
         conseil:{ fr:"Rédiger un plan d'exécution BIM type et l'imposer dès le démarrage de chaque projet.",
                   en:"Write a standard BIM execution plan and require it from the start of every project." } },
-      { cle:"data_exchange", libelle:{ fr:"Échange des données", en:"Data exchange" },
+      { cle:"data_exchange", paliers:{ fr:["Reconstruit", "Repris", "Exploitable", "Fluide"], en:["Rebuilt", "Reworked", "Usable", "Seamless"] }, libelle:{ fr:"Échange des données", en:"Data exchange" },
         enonces:{
           conception:{
             fr:[ "Les modèles échangés entre disciplines sont exploitables tels quels, sans reconstruction ni reprise.",
@@ -387,13 +387,8 @@ const AXES = [
   }
 ];
 
-/* Les quatre paliers, pour les axes comme pour les sous-sections. */
-const NIVEAUX = [
-  { slug:"first_milestones",  libelle:{ fr:"Premiers jalons", en:"First milestones" } },
-  { slug:"momentum_building", libelle:{ fr:"Élan amorcé",     en:"Momentum building" } },
-  { slug:"well_advanced",     libelle:{ fr:"Bien avancé",     en:"Well advanced" } },
-  { slug:"leader",            libelle:{ fr:"Chef de file",    en:"Leader" } }
-];
+/* Quatre paliers par axe et par sous-section (clé `paliers` ci-dessus),
+   du plus faible au plus fort, choisis par la moyenne des réponses. */
 
 function rangDeMoyenne(m){
   if(m <= 2.0) return 0;
@@ -548,12 +543,12 @@ function calculer(){
     const sections = a.sections.map(s => {
       const notes = enoncesDe(s).map((_, i) => etat.reponses[s.cle + "|" + i] || 0);
       const moyenne = notes.reduce((tot, n) => tot + n, 0) / notes.length;
-      return { cle:s.cle, libelle:t(s.libelle), conseil:t(s.conseil), notes, moyenne,
+      return { cle:s.cle, libelle:t(s.libelle), conseil:t(s.conseil), paliers:t(s.paliers), notes, moyenne,
                score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne), def:s };
     });
     const moyenne = sections.reduce((tot, s) => tot + s.moyenne, 0) / sections.length;
     const prio = sections.slice().sort((x, y) => x.moyenne - y.moyenne)[0];
-    return { cle:a.cle, libelle:t(a.libelle), couleur:a.couleur, niveaux:t(a.niveaux), sections, moyenne, prio,
+    return { cle:a.cle, libelle:t(a.libelle), couleur:a.couleur, niveaux:t(a.niveaux), paliers:t(a.paliers), sections, moyenne, prio,
              score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
   });
   etat.resultat = { axes, bim:bimEvalue() };
@@ -571,9 +566,9 @@ function detailReponses(){
     ""
   ];
   r.axes.forEach(a => {
-    lignes.push(`${a.libelle} : ${a.score}/100 · ${t(NIVEAUX[a.rang].libelle)}`);
+    lignes.push(`${a.libelle} : ${a.score}/100 · ${a.paliers[a.rang]}`);
     a.sections.forEach(s => {
-      lignes.push(`   ${s.libelle} : ${s.score}/100 · ${t(NIVEAUX[s.rang].libelle)}`);
+      lignes.push(`   ${s.libelle} : ${s.score}/100 · ${s.paliers[s.rang]}`);
       enoncesDe(s.def).forEach((texte, i) => lignes.push(`      ${s.notes[i]}/5 : ${texte}`));
     });
     lignes.push("");
@@ -735,7 +730,7 @@ function ecranResultats(){
     <div class="score-carte">
       <div class="score-nom">${a.libelle}</div>
       <div class="score-chiffre" style="color:${a.couleur}">${a.score}<span class="score-sur">${t(UI.sur100)}</span></div>
-      <div class="score-niveau">${t(NIVEAUX[a.rang].libelle)}</div>
+      <div class="score-niveau">${a.paliers[a.rang]}</div>
       <div class="axe-jauge"><span style="width:${a.score}%;background:${a.couleur}"></span></div>
     </div>`).join("");
 
@@ -743,14 +738,14 @@ function ecranResultats(){
     <div class="bloc-axe">
       <div class="bloc-entete">
         <h3>${a.libelle}</h3>
-        <span class="bloc-niveau">${a.score} / 100 · ${t(NIVEAUX[a.rang].libelle)}</span>
+        <span class="bloc-niveau">${a.score} / 100 · ${a.paliers[a.rang]}</span>
       </div>
       <p class="bloc-texte">${a.niveaux[a.rang]}</p>
       ${a.sections.map(s => `
         <div class="sous ${s.cle === a.prio.cle ? "prio" : ""}">
           <span class="sous-nom">${s.libelle}</span>
           <div class="axe-jauge"><span style="width:${s.score}%;background:${a.couleur}"></span></div>
-          <span class="sous-val">${s.score} · ${t(NIVEAUX[s.rang].libelle)}</span>
+          <span class="sous-val">${s.score} · ${s.paliers[s.rang]}</span>
         </div>`).join("")}
       <div class="encadre encadre-axe">
         <h3>${t(UI.parOuCommencer)}</h3>
