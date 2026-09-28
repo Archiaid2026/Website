@@ -22,16 +22,24 @@ if (toggle && nav) {
   });
 }
 
-// Login / signup modal
+// Fenêtre d'accès aux outils (prénom, nom, entreprise, courriel)
 var modalOverlay = document.getElementById('auth-modal');
 if (modalOverlay) {
   var openers = document.querySelectorAll('[data-open-modal]');
   var closeBtn = modalOverlay.querySelector('.modal-close');
-  var tabs = modalOverlay.querySelectorAll('.modal-tab');
   var forms = modalOverlay.querySelectorAll('.modal-form');
 
   function openModal(e) {
     if (e) e.preventDefault();
+    // Visiteur déjà connu dans ce navigateur : on l'envoie directement aux outils
+    try {
+      var connu = JSON.parse(localStorage.getItem('archiaid_user') || 'null');
+      if (connu && connu.courriel) {
+        localStorage.setItem('archiaid_lang', (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? 'fr' : 'en');
+        window.location.href = modalOverlay.getAttribute('data-redirect');
+        return;
+      }
+    } catch (err) {}
     modalOverlay.classList.add('open');
     document.body.classList.add('modal-locked');
     var firstInput = modalOverlay.querySelector('.modal-form.active input');
@@ -52,20 +60,9 @@ if (modalOverlay) {
     if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
   });
 
-  tabs.forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      tabs.forEach(function (t) { t.classList.remove('active'); });
-      forms.forEach(function (f) { f.classList.remove('active'); });
-      tab.classList.add('active');
-      var target = document.getElementById(tab.getAttribute('data-target'));
-      if (target) target.classList.add('active');
-    });
-  });
-
-  // Connexion côté client : on enregistre l'utilisateur dans le navigateur
-  // puis on le redirige vers la page des outils (pas de serveur d'authentification).
-  // À la création d'un compte, le contact est aussi créé dans HubSpot par le
-  // formulaire « Tools sign-up ». HubSpot fait correspondre les contacts par
+  // Pas de mot de passe ni de serveur : on enregistre les coordonnées dans le
+  // navigateur, on crée le contact dans HubSpot par le formulaire « Tools sign-up »,
+  // puis on redirige vers la page des outils. HubSpot fait correspondre les contacts par
   // courriel : un courriel déjà connu met la fiche à jour, il n'en crée pas une seconde.
   var HUBSPOT = {
     portalId: '44586873',
@@ -107,17 +104,9 @@ if (modalOverlay) {
       try {
         // La page des outils s'ouvrira dans la langue du site où l'on se connecte
         localStorage.setItem('archiaid_lang', (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? 'fr' : 'en');
-        // À la connexion (courriel + mot de passe), on garde le nom et l'entreprise déjà connus
-        if (form.id === 'login-form') {
-          var ancien = JSON.parse(localStorage.getItem('archiaid_user') || 'null');
-          if (ancien && ancien.courriel === u.courriel) {
-            u.prenom = ancien.prenom || ''; u.famille = ancien.famille || '';
-            u.entreprise = ancien.entreprise || ''; u.nom = ancien.nom || '';
-          }
-        }
         localStorage.setItem('archiaid_user', JSON.stringify(u));
       } catch (err) {}
-      if (form.id === 'signup-form') creerContactHubSpot(u);
+      creerContactHubSpot(u);
       var note = form.querySelector('.form-note');
       if (note) {
         note.textContent = note.getAttribute('data-success');

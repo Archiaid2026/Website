@@ -353,45 +353,25 @@
         <h3 id="auth-modal-title">Outils</h3>
         <button class="modal-close" aria-label="Fermer">&times;</button>
       </div>
-      <div class="modal-tabs" role="tablist">
-        <button class="modal-tab active" data-target="login-form" role="tab">Connexion</button>
-        <button class="modal-tab" data-target="signup-form" role="tab">Créer un compte</button>
-      </div>
-      <form class="modal-form active" id="login-form">
+      <form class="modal-form active" id="access-form">
         <div class="form-field">
-          <label for="login-email">Courriel</label>
-          <input type="email" id="login-email" name="email" autocomplete="email" required>
+          <label for="access-firstname">Prénom</label>
+          <input type="text" id="access-firstname" name="firstname" autocomplete="given-name" required>
         </div>
         <div class="form-field">
-          <label for="login-password">Mot de passe</label>
-          <input type="password" id="login-password" name="password" autocomplete="current-password" required>
-        </div>
-        <button type="submit" class="btn">Se connecter</button>
-        <p class="form-note" data-success="Connexion réussie — redirection vers vos outils…">Accédez à vos outils clients Archi Aid.</p>
-      </form>
-      <form class="modal-form" id="signup-form">
-        <div class="form-field">
-          <label for="signup-firstname">Prénom</label>
-          <input type="text" id="signup-firstname" name="firstname" autocomplete="given-name" required>
+          <label for="access-lastname">Nom</label>
+          <input type="text" id="access-lastname" name="lastname" autocomplete="family-name" required>
         </div>
         <div class="form-field">
-          <label for="signup-lastname">Nom</label>
-          <input type="text" id="signup-lastname" name="lastname" autocomplete="family-name" required>
+          <label for="access-company">Entreprise</label>
+          <input type="text" id="access-company" name="company" autocomplete="organization" required>
         </div>
         <div class="form-field">
-          <label for="signup-company">Entreprise</label>
-          <input type="text" id="signup-company" name="company" autocomplete="organization" required>
+          <label for="access-email">Courriel</label>
+          <input type="email" id="access-email" name="email" autocomplete="email" required>
         </div>
-        <div class="form-field">
-          <label for="signup-email">Courriel</label>
-          <input type="email" id="signup-email" name="email" autocomplete="email" required>
-        </div>
-        <div class="form-field">
-          <label for="signup-password">Mot de passe</label>
-          <input type="password" id="signup-password" name="password" autocomplete="new-password" minlength="8" required>
-        </div>
-        <button type="submit" class="btn">Créer mon compte</button>
-        <p class="form-note" data-success="Compte créé — redirection vers vos outils…">Créez votre compte pour accéder aux outils Archi Aid.</p>
+        <button type="submit" class="btn">Accéder aux outils</button>
+        <p class="form-note" data-success="Merci — redirection vers vos outils…">Vos coordonnées servent à vous transmettre vos résultats.</p>
       </form>
     </div>
   </div>
