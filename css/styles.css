@@ -299,7 +299,7 @@ h3 { font-size: 1.5rem; }
   align-items: center;
   gap: 5rem;
   width: max-content;
-  animation: marquee 40s linear infinite;
+  animation: marquee 110s linear infinite;
 }
 .marquee-track img {
   height: clamp(120px, 20vh, 190px);
