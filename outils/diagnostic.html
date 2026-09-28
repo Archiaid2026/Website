@@ -160,9 +160,9 @@ const ECHELLE = [
 ];
 
 /* ==========================================================================
-   3. LA HIÉRARCHIE : 3 AXES > 13 SOUS-SECTIONS > 2 ÉNONCÉS
+   3. LA HIÉRARCHIE : 3 AXES > 8 SOUS-SECTIONS > 2 ÉNONCÉS
    Les clés d'axe et de sous-section sont les noms internes des propriétés
-   HubSpot (suffixe _score / _level ajouté à l'envoi).
+   HubSpot (suffixe _score ajouté à l'envoi).
    Tous les énoncés sont formulés positivement : accord élevé = maturité élevée.
    ========================================================================== */
 const AXES = [
@@ -175,7 +175,7 @@ const AXES = [
       "Vos opérations sont pilotées par des données fiables et des processus qui survivent aux changements de personnel."
     ],
     sections:[
-      { cle:"visibility_control", libelle:"Visibilité et contrôle",
+      { cle:"visibility", libelle:"Visibilité et contrôle",
         enonces:[
           "J'ai une vue d'ensemble de l'exécution de mes projets en cours sans avoir à consulter chaque personne.",
           "L'avancement et les coûts de nos projets sont à jour et consultables en tout temps, pas seulement à la réunion hebdomadaire."
@@ -187,24 +187,12 @@ const AXES = [
           "Nos processus sont mesurés et révisés selon un cycle défini, pas seulement lorsqu'un problème survient."
         ],
         conseil:"Documenter les trois processus les plus fréquents et associer à chacun un indicateur suivi chaque mois." },
-      { cle:"systems_centralization", libelle:"Centralisation des systèmes",
+      { cle:"system_centralization", libelle:"Centralisation des systèmes",
         enonces:[
           "Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement.",
           "Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan."
         ],
-        conseil:"Désigner un système de référence par type d'information et y migrer ce qui vit encore dans les fichiers locaux et les courriels." },
-      { cle:"systems_integration", libelle:"Intégration des systèmes",
-        enonces:[
-          "Nos outils sont reliés entre eux : une même information n'a pas à être ressaisie à plusieurs endroits.",
-          "L'adoption d'un nouvel outil suit une démarche définie : besoin, choix, déploiement, formation, puis mesure des résultats."
-        ],
-        conseil:"Cartographier les ressaisies entre vos systèmes et automatiser d'abord celle qui coûte le plus d'heures." },
-      { cle:"client_reporting", libelle:"Reddition de comptes",
-        enonces:[
-          "Nous répondons aux exigences de suivi et de reddition de comptes de nos clients sans mobiliser d'effort exceptionnel.",
-          "Nos rapports d'avancement sont produits à partir de nos systèmes, sans reconstruction manuelle à chaque échéance."
-        ],
-        conseil:"Standardiser un rapport client généré depuis vos outils, plutôt que reconstruit à chaque demande." }
+        conseil:"Désigner un système de référence par type d'information et y migrer ce qui vit encore dans les fichiers locaux et les courriels." }
     ]
   },
   {
@@ -233,13 +221,7 @@ const AXES = [
           "Nos données de projet sont assez structurées et centralisées pour être exploitées par un outil d'IA.",
           "L'historique de nos projets est accessible et consultable, pas enfoui dans des courriels et des dossiers personnels."
         ],
-        conseil:"Structurer d'abord les données de projet les plus demandées : coûts, échéanciers, décisions." },
-      { cle:"ai_measured_value", libelle:"Valeur mesurée",
-        enonces:[
-          "L'IA nous fait gagner du temps sur des tâches que notre secteur traite encore manuellement.",
-          "Nous avons identifié et priorisé les cas d'usage de l'IA à déployer dans les douze prochains mois."
-        ],
-        conseil:"Mesurer le temps gagné sur un cas d'usage précis avant d'en lancer un deuxième." }
+        conseil:"Structurer d'abord les données de projet les plus demandées : coûts, échéanciers, décisions." }
     ]
   },
   {
@@ -251,22 +233,6 @@ const AXES = [
       "Le BIM est un avantage concurrentiel : processus maîtrisés, données réutilisées, exigences dépassées."
     ],
     sections:[
-      { cle:"model_based_production", libelle:"Production à partir de la maquette",
-        enonces:{
-          conception:[
-            "Nos documents contractuels sont extraits de la maquette plutôt que produits en parallèle en 2D.",
-            "La maquette est le support de travail principal de nos équipes, du concept aux plans d'exécution."
-          ],
-          realisation:[
-            "La maquette est accessible au chantier et réellement utilisée par nos équipes sur le terrain.",
-            "Nos équipes de projet consultent la maquette plutôt que des plans imprimés pour préparer les travaux."
-          ],
-          donneur_ouvrage:[
-            "La maquette alimente nos décisions de projet : quantitatifs, scénarios de coûts, suivi d'avancement.",
-            "Nous consultons la maquette nous-mêmes plutôt que d'attendre des extraits de nos consultants."
-          ]
-        },
-        conseil:"Choisir un livrable et le produire uniquement à partir de la maquette sur le prochain projet." },
       { cle:"bim_process", libelle:"Processus BIM",
         enonces:{
           conception:[
@@ -298,23 +264,7 @@ const AXES = [
             "Les maquettes de nos différents projets suivent un format commun qui permet de les comparer."
           ]
         },
-        conseil:"Fixer un format d'échange et un niveau de détail par livrable, et vérifier chaque maquette reçue selon ces critères." },
-      { cle:"bim_market_position", libelle:"Position sur le marché",
-        enonces:{
-          conception:[
-            "Notre maîtrise du BIM nous permet de viser des mandats que des bureaux comparables ne peuvent pas servir.",
-            "Nous répondons aux exigences BIM des donneurs d'ouvrage publics sans ajouter de ressources externes."
-          ],
-          realisation:[
-            "Nous répondons aux exigences BIM des appels d'offres avec nos ressources internes, sans sous-traiter la coordination.",
-            "Notre capacité BIM est un argument dans nos soumissions, pas une contrainte à absorber."
-          ],
-          donneur_ouvrage:[
-            "Nos exigences numériques soutiennent la comparaison avec celles des donneurs d'ouvrage les plus avancés de notre marché.",
-            "Les données de nos projets nous servent après la livraison, pour l'exploitation et les projets suivants."
-          ]
-        },
-        conseil:"Faire de votre capacité BIM un argument explicite dans vos offres de service et vos soumissions." }
+        conseil:"Fixer un format d'échange et un niveau de détail par livrable, et vérifier chaque maquette reçue selon ces critères." }
     ]
   }
 ];
@@ -382,7 +332,7 @@ function ecranAccueil(){
   progression(null);
   scene.innerHTML = `
     <h1>Où en est votre organisation dans sa transformation numérique ?</h1>
-    <p class="plein">Environ six minutes. Pour chaque énoncé, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
+    <p class="plein">Seize énoncés, environ quatre minutes. Pour chaque énoncé, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
     <p>Votre situation est ensuite lue sur trois axes : gestion opérationnelle, intégration de l'IA et maturité BIM. Chaque axe se décompose en sous-sections qui indiquent précisément par où commencer. Le volet BIM s'adapte au type d'activité que vous exercez.</p>
     <div class="boutons"><button class="primaire" id="go">Commencer</button></div>
   `;
@@ -591,17 +541,12 @@ function champsHubSpot(contact){
     { name:"lastname",         value:contact.nom },
     { name:"company",          value:contact.entreprise },
     { name:"company_category", value:etat.categorie },
-    { name:"company_size",     value:etat.taille },
-    { name:"assessment_date",  value:new Date().toISOString().split("T")[0] }
+    { name:"company_size",     value:etat.taille }
   ];
   r.axes.forEach(a => {
     champs.push({ name:a.cle + "_score", value:String(a.score) });
-    champs.push({ name:a.cle + "_level", value:NIVEAUX[a.rang].slug });
     a.sections.forEach(s => champs.push({ name:s.cle + "_score", value:String(s.score) }));
   });
-  champs.push({ name:"priority_axis",       value:r.axePrio.cle });
-  champs.push({ name:"priority_subsection", value:r.sectionPrio.cle });
-  champs.push({ name:"assessment_answers",  value:detailReponses() });
   return champs.filter(c => c.value !== "" && c.value != null);
 }
 
@@ -631,7 +576,7 @@ async function envoyerHubSpot(contact){
     // HubSpot rejette toute la soumission si un champ manque au formulaire.
     // On réessaie avec le contact et le détail texte seulement, pour ne pas perdre le prospect.
     console.warn("Soumission complète refusée, nouvelle tentative avec les champs de base. Vérifiez que toutes les propriétés sont sur le formulaire.", e);
-    const base = ["email","firstname","lastname","company","assessment_answers"];
+    const base = ["email","firstname","lastname","company"];
     await soumettre(tous.filter(c => base.includes(c.name)));
   }
 }
