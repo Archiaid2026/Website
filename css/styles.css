@@ -612,7 +612,7 @@ h3 { font-size: 1.5rem; }
 /* ---------- Clients (cartes de logos qui défilent en continu, texte centré dessous) ---------- */
 #clients {
   justify-content: flex-start;
-  padding-top: clamp(2.5rem, 7vh, 5rem);
+  padding-top: 0;                    /* les ficelles partent du haut de la section */
   padding-bottom: clamp(2rem, 6vh, 4rem);
   background: linear-gradient(180deg, #f2f1f0 0%, var(--off-white) 55%);
   overflow: hidden;
@@ -621,12 +621,12 @@ h3 { font-size: 1.5rem; }
 .logo-marquee {
   width: 100%;
   overflow: hidden;
-  padding-block: 1.5rem;             /* place pour l'ombre et le soulèvement au survol */
+  padding-bottom: 1.5rem;            /* place pour l'ombre et le soulèvement au survol */
 }
 .logo-track {
   --gap: clamp(1rem, 2vw, 2.4rem);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--gap);
   width: max-content;
   padding-inline: calc(var(--gap) / 2);
@@ -636,9 +636,39 @@ h3 { font-size: 1.5rem; }
   from { transform: translateX(0); }
   to { transform: translateX(calc(-50% - var(--gap) / 2)); }
 }
-.logo-card {
+/* Chaque carte pend au bout d'une ficelle, à une hauteur différente, et se balance doucement */
+.logo-col {
   --w: clamp(150px, 14vw, 230px);
+  position: relative;
   flex: 0 0 auto;
+  padding-top: var(--drop, 60px);
+  transform-origin: 50% 0;
+  animation: logo-sway 4.5s ease-in-out infinite alternate;
+}
+.logo-col::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: var(--drop, 60px);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.22));
+}
+@keyframes logo-sway {
+  from { transform: rotate(-1.4deg); }
+  to { transform: rotate(1.4deg); }
+}
+/* Hauteurs de ficelle qui se répètent tous les huit, décalages de balancement variés */
+.logo-col:nth-child(8n+1) { --drop: clamp(70px, 14vh, 225px); animation-delay: -0.4s; }
+.logo-col:nth-child(8n+2) { --drop: clamp(20px, 5vh, 90px);   animation-delay: -1.9s; }
+.logo-col:nth-child(8n+3) { --drop: clamp(50px, 10vh, 165px); animation-delay: -3.1s; }
+.logo-col:nth-child(8n+4) { --drop: clamp(10px, 3vh, 54px);   animation-delay: -0.9s; }
+.logo-col:nth-child(8n+5) { --drop: clamp(36px, 8vh, 135px);  animation-delay: -2.6s; }
+.logo-col:nth-child(8n+6) { --drop: clamp(16px, 4vh, 72px);   animation-delay: -1.3s; }
+.logo-col:nth-child(8n+7) { --drop: clamp(64px, 13vh, 210px); animation-delay: -3.8s; }
+.logo-col:nth-child(8n+8) { --drop: clamp(30px, 7vh, 120px);  animation-delay: -2.2s; }
+
+.logo-card {
   width: var(--w);
   height: calc(var(--w) * 0.95);
   min-width: 0;
@@ -719,7 +749,10 @@ h3 { font-size: 1.5rem; }
 .btn-dark:hover { background: var(--accent); }
 
 @media (max-width: 680px) {
-  .logo-card { --w: 140px; border-radius: 12px; }
+  .logo-col { --w: 140px; }
+  .logo-col:nth-child(n) { --drop: 24px; }
+  .logo-col:nth-child(even) { --drop: 56px; }
+  .logo-card { border-radius: 12px; }
   .logo-track { animation-duration: 50s; }
 }
 
@@ -1205,7 +1238,7 @@ body.modal-locked { overflow: hidden; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .marquee-track { animation: none; }
   .hero h1 .line, .hero .hero-lead, .hero .btn-jumbo { animation: none; opacity: 1; }
-  .logo-track { animation: none; }
+  .logo-track, .logo-col { animation: none; }
 }
 
 /* ---------- Responsive ---------- */
