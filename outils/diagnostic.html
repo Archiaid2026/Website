@@ -36,6 +36,13 @@
   p{margin-bottom:14px;color:var(--texte-doux)}
   p.plein{color:var(--texte)}
 
+  /* Choix de la langue */
+  .langues{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  @media(max-width:480px){.langues{grid-template-columns:1fr}}
+  .langue{border:1.5px solid var(--trait);border-radius:10px;background:#fff;padding:26px 16px;font-size:20px;font-weight:600;color:var(--texte);cursor:pointer;font-family:inherit;transition:border-color .15s ease,background .15s ease}
+  .langue:hover{border-color:var(--rouille);background:#FCF6F4}
+  .langue:focus-visible{outline:2px solid var(--acier);outline-offset:2px}
+
   .axe-etiquette{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:5px 10px;border-radius:4px;margin-bottom:16px}
   .axe-operational_management{background:#EDF1F6;color:var(--acier)}
   .axe-ai_integration{background:#E9F2F1;color:var(--sarcelle)}
@@ -52,7 +59,6 @@
   .cran b{display:block;font-size:22px;font-weight:700;color:var(--rouille);line-height:1}
   .cran small{display:block;font-size:11px;color:var(--texte-doux);margin-top:7px;line-height:1.25;min-height:28px}
   @media(max-width:480px){.cran{padding:13px 2px 10px}.cran b{font-size:19px}.cran small{font-size:10px;min-height:34px}}
-  .ancres{display:flex;justify-content:space-between;font-size:12px;color:var(--texte-doux)}
 
   label.champ{display:block;font-size:13px;font-weight:600;margin-bottom:6px;margin-top:16px}
   select,input[type=text],input[type=email]{width:100%;padding:12px 13px;font-size:15px;font-family:inherit;border:1.5px solid var(--trait);border-radius:8px;background:#fff;color:var(--texte)}
@@ -71,8 +77,7 @@
   .scores.deux{grid-template-columns:repeat(2,1fr)}
   @media(max-width:560px){.scores,.scores.deux{grid-template-columns:1fr}}
   .score-carte{border:1px solid var(--trait);border-radius:8px;padding:18px 16px;text-align:center}
-  .score-carte.prio{border-color:var(--rouille);background:#FDFAF9}
-  .score-nom{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--texte-doux);font-weight:600;min-height:32px}
+  .score-nom{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--texte);font-weight:700;min-height:34px}
   .score-chiffre{font-size:44px;font-weight:700;line-height:1.1;margin:6px 0 2px}
   .score-sur{font-size:16px;color:var(--texte-doux);font-weight:400}
   .score-niveau{font-size:14px;font-weight:700;color:var(--brun)}
@@ -82,8 +87,8 @@
   .axe-jauge span{display:block;height:100%;border-radius:4px}
 
   /* Détail par axe : ses sous-sections */
+  .titre-details{font-size:20px;margin:26px 0 14px}
   .bloc-axe{border:1px solid var(--trait);border-radius:8px;padding:18px 20px;margin-bottom:16px}
-  .bloc-axe.bloc-prio{border-color:var(--rouille);background:#FDFAF9}
   .bloc-entete{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:4px}
   .bloc-entete h3{margin:0}
   .bloc-niveau{font-size:15px;font-weight:700;color:var(--rouille);white-space:nowrap}
@@ -117,7 +122,7 @@
 <div class="cadre">
   <div class="entete">
     <div class="marque">Archi Aid</div>
-    <div style="font-size:15px;color:var(--texte-doux)">Diagnostic de maturité numérique</div>
+    <div style="font-size:15px;color:var(--texte-doux)" id="sous-titre">Diagnostic de maturité numérique</div>
     <div class="barre" id="barre-zone" style="display:none"><span id="barre"></span></div>
     <div class="compteur" id="compteur" style="display:none"></div>
   </div>
@@ -137,154 +142,260 @@ const CONFIG = {
 };
 
 /* ==========================================================================
-   2. PROFIL DE L'ORGANISATION (non noté)
+   2. LANGUE ET TEXTES D'INTERFACE
+   Tout texte affiché existe en français et en anglais : { fr:"…", en:"…" }.
+   t(x) renvoie la version dans la langue choisie au premier écran.
+   ========================================================================== */
+let LANG = "fr";
+function t(x){ return (x && typeof x === "object" && !Array.isArray(x)) ? (x[LANG] || x.fr) : x; }
+
+const UI = {
+  sousTitre:      { fr:"Diagnostic de maturité numérique", en:"Digital Maturity Assessment" },
+  titrePage:      { fr:"Diagnostic de maturité numérique | Archi Aid", en:"Digital Maturity Assessment | Archi Aid" },
+  profilEtape:    { fr:"Profil de votre organisation", en:"Your organization" },
+  profilTitre:    { fr:"D'abord, votre organisation", en:"First, your organization" },
+  profilTexte:    { fr:"Deux précisions qui servent à adapter les énoncés suivants à votre réalité.", en:"Two details that adapt the following statements to your reality." },
+  champActivite:  { fr:"Votre principale activité en construction", en:"Your main activity in construction" },
+  champTaille:    { fr:"Taille de votre organisation", en:"Size of your organization" },
+  selectionnez:   { fr:"Sélectionnez", en:"Select" },
+  continuer:      { fr:"Continuer", en:"Continue" },
+  retour:         { fr:"Retour", en:"Back" },
+  modifierProfil: { fr:"Modifier le profil", en:"Edit profile" },
+  enoncePrecedent:{ fr:"Énoncé précédent", en:"Previous statement" },
+  enonceSur:      { fr:"Énoncé {i} sur {n}", en:"Statement {i} of {n}" },
+  termine:        { fr:"Terminé", en:"Done" },
+  scoresTitre:    { fr:"Vos scores de maturité", en:"Your maturity scores" },
+  sur100:         { fr:" / 100", en:" / 100" },
+  bimNonEvalue:   { fr:"Le volet Maturité BIM n'a pas été évalué : votre type d'activité n'implique pas la maquette numérique.", en:"The BIM Maturity section was not assessed: your type of activity does not involve building information modeling." },
+  details:        { fr:"Détails", en:"Details" },
+  parOuCommencer: { fr:"Par où commencer", en:"Where to start" },
+  pointFaible:    { fr:"Votre point d'appui le plus faible sur cet axe est <strong>{s}</strong>. ", en:"Your weakest point on this axis is <strong>{s}</strong>. " },
+  envoyer:        { fr:"Envoyer", en:"Send" },
+  envoye:         { fr:"Envoyé", en:"Sent" },
+  envoiEnCours:   { fr:"Envoi en cours…", en:"Sending…" },
+  refaire:        { fr:"Refaire le diagnostic", en:"Retake the assessment" },
+  envoiOk:        { fr:"Résultats envoyés. Vous recevrez votre rapport à {e}.", en:"Results sent. You will receive your report at {e}." },
+  envoiInactif:   { fr:"Résultats enregistrés. L'envoi par courriel sera actif une fois la connexion à HubSpot configurée.", en:"Results saved. Email delivery will be active once the HubSpot connection is configured." },
+  envoiEchec:     { fr:"L'envoi n'a pas fonctionné. Réessayez dans un instant ou écrivez-nous à Info@archiaid.ca.", en:"Sending failed. Try again in a moment or write to us at Info@archiaid.ca." },
+  gateTitre:      { fr:"Où vous envoyer vos résultats ?", en:"Where should we send your results?" },
+  gateTexte:      { fr:"Indiquez où vous joindre : vous recevrez votre rapport par courriel.", en:"Tell us how to reach you: you will receive your report by email." },
+  prenom:         { fr:"Prénom", en:"First name" },
+  nom:            { fr:"Nom", en:"Last name" },
+  entreprise:     { fr:"Entreprise", en:"Company" },
+  courriel:       { fr:"Courriel professionnel", en:"Work email" },
+  consentement:   { fr:"J'accepte que Solutions Archi Aid inc. conserve ces renseignements pour me transmettre mon résultat et communiquer avec moi à ce sujet. Je peux retirer ce consentement en tout temps en écrivant à l'adresse indiquée dans les communications reçues.",
+                    en:"I agree that Solutions Archi Aid inc. may keep this information to send me my results and contact me about them. I can withdraw this consent at any time by writing to the address shown in the communications received." },
+  detailActivite: { fr:"Activité", en:"Activity" },
+  detailTaille:   { fr:"Taille", en:"Size" },
+  detailEchelle:  { fr:"Échelle : accord de 1 à 5. Score = (moyenne - 1) / 4 x 100.", en:"Scale: agreement from 1 to 5. Score = (average - 1) / 4 x 100." },
+  detailSansBim:  { fr:"Volet BIM non évalué (activité sans BIM).", en:"BIM section not assessed (activity without BIM)." },
+  detailPriorite: { fr:"Priorité", en:"Priority" }
+};
+
+/* ==========================================================================
+   3. PROFIL DE L'ORGANISATION (non noté)
    `bim` indique si le volet BIM est évalué ; `famille` choisit la version
    des énoncés BIM. Les valeurs sont celles des listes HubSpot.
    ========================================================================== */
 const CATEGORIES = [
-  { valeur:"promoteur",            libelle:"Développement immobilier / Promoteur",                famille:"donneur_ouvrage", bim:true },
-  { valeur:"architecture",         libelle:"Architecture",                                         famille:"conception",      bim:true },
-  { valeur:"ingenierie",           libelle:"Ingénierie (structure, civil, mécanique, électrique)", famille:"conception",      bim:true },
-  { valeur:"entrepreneur_general", libelle:"Entrepreneur général / Gestion de construction",       famille:"realisation",     bim:true },
-  { valeur:"autre",                libelle:"Autre",                                                famille:null,              bim:false }
+  { valeur:"promoteur",            libelle:{ fr:"Développement immobilier / Promoteur",                en:"Real estate development / Developer" },        famille:"donneur_ouvrage", bim:true },
+  { valeur:"architecture",         libelle:{ fr:"Architecture",                                         en:"Architecture" },                                famille:"conception",      bim:true },
+  { valeur:"ingenierie",           libelle:{ fr:"Ingénierie (structure, civil, mécanique, électrique)", en:"Engineering (structural, civil, mechanical, electrical)" }, famille:"conception", bim:true },
+  { valeur:"entrepreneur_general", libelle:{ fr:"Entrepreneur général / Gestion de construction",       en:"General contractor / Construction management" }, famille:"realisation",     bim:true },
+  { valeur:"sous_traitant",        libelle:{ fr:"Sous-traitant / Entrepreneur spécialisé",              en:"Subcontractor / Specialty contractor" },         famille:"realisation",     bim:true },
+  { valeur:"autre",                libelle:{ fr:"Autre",                                                en:"Other" },                                       famille:null,              bim:false }
 ];
 
 const TAILLES = [
-  { valeur:"1_9",         libelle:"1 à 9 employés" },
-  { valeur:"10_49",       libelle:"10 à 49 employés" },
-  { valeur:"50_199",      libelle:"50 à 199 employés" },
-  { valeur:"200_499",     libelle:"200 à 499 employés" },
-  { valeur:"500_ou_plus", libelle:"500 employés et plus" }
+  { valeur:"1_9",         libelle:{ fr:"1 à 9 employés",        en:"1 to 9 employees" } },
+  { valeur:"10_49",       libelle:{ fr:"10 à 49 employés",      en:"10 to 49 employees" } },
+  { valeur:"50_199",      libelle:{ fr:"50 à 199 employés",     en:"50 to 199 employees" } },
+  { valeur:"200_499",     libelle:{ fr:"200 à 499 employés",    en:"200 to 499 employees" } },
+  { valeur:"500_ou_plus", libelle:{ fr:"500 employés et plus",  en:"500 employees or more" } }
 ];
 
 const ECHELLE = [
-  { note:1, ancre:"Pas du tout d'accord" },
-  { note:2, ancre:"Plutôt en désaccord" },
-  { note:3, ancre:"Partiellement vrai" },
-  { note:4, ancre:"Plutôt d'accord" },
-  { note:5, ancre:"Tout à fait d'accord" }
+  { note:1, ancre:{ fr:"Pas du tout d'accord",  en:"Strongly disagree" } },
+  { note:2, ancre:{ fr:"Plutôt en désaccord",   en:"Somewhat disagree" } },
+  { note:3, ancre:{ fr:"Partiellement vrai",    en:"Partly true" } },
+  { note:4, ancre:{ fr:"Plutôt d'accord",       en:"Somewhat agree" } },
+  { note:5, ancre:{ fr:"Tout à fait d'accord",  en:"Strongly agree" } }
 ];
 
 /* ==========================================================================
-   3. LA HIÉRARCHIE : 3 AXES > 8 SOUS-SECTIONS > 2 ÉNONCÉS
+   4. LA HIÉRARCHIE : 3 AXES > 8 SOUS-SECTIONS > 2 ÉNONCÉS
    Les clés d'axe et de sous-section sont les noms internes des propriétés
    HubSpot (suffixe _score ajouté à l'envoi).
    Tous les énoncés sont formulés positivement : accord élevé = maturité élevée.
    ========================================================================== */
 const AXES = [
   {
-    cle:"operational_management", libelle:"Gestion opérationnelle", couleur:"var(--acier)",
-    niveaux:[
-      "Le fonctionnement repose sur des personnes plutôt que sur des systèmes. L'information existe, mais il faut savoir à qui la demander.",
-      "Des outils et des pratiques sont en place, mais leur usage varie d'une équipe à l'autre. Vous payez pour des capacités que vous n'exploitez qu'en partie.",
-      "Vos processus sont documentés et vos systèmes reliés pour l'essentiel. La prochaine étape est de mesurer, pour savoir quoi améliorer.",
-      "Vos opérations sont pilotées par des données fiables et des processus qui survivent aux changements de personnel."
-    ],
+    cle:"operational_management", libelle:{ fr:"Gestion opérationnelle", en:"Operational management" }, couleur:"var(--acier)",
+    niveaux:{
+      fr:[
+        "Le fonctionnement repose sur des personnes plutôt que sur des systèmes. L'information existe, mais il faut savoir à qui la demander.",
+        "Des outils et des pratiques sont en place, mais leur usage varie d'une équipe à l'autre. Vous payez pour des capacités que vous n'exploitez qu'en partie.",
+        "Vos processus sont documentés et vos systèmes reliés pour l'essentiel. La prochaine étape est de mesurer, pour savoir quoi améliorer.",
+        "Vos opérations sont pilotées par des données fiables et des processus qui survivent aux changements de personnel."
+      ],
+      en:[
+        "Operations rely on people rather than systems. The information exists, but you have to know who to ask.",
+        "Tools and practices are in place, but their use varies from one team to another. You pay for capabilities you only partly use.",
+        "Your processes are documented and your systems mostly connected. The next step is measuring, to know what to improve.",
+        "Your operations are driven by reliable data and processes that survive staff changes."
+      ]
+    },
     sections:[
-      { cle:"visibility", libelle:"Visibilité et contrôle",
-        enonces:[
-          "J'ai une vue d'ensemble de l'exécution de mes projets en cours sans avoir à consulter chaque personne.",
-          "L'avancement et les coûts de nos projets sont à jour et consultables en tout temps, pas seulement à la réunion hebdomadaire."
-        ],
-        conseil:"Mettre en place un tableau de bord de projets alimenté par vos outils existants, revu à fréquence fixe." },
-      { cle:"process_maturity", libelle:"Maturité des processus",
-        enonces:[
-          "Nos façons de faire sont documentées et appliquées de la même manière d'un projet à l'autre.",
-          "Nos processus sont mesurés et révisés selon un cycle défini, pas seulement lorsqu'un problème survient."
-        ],
-        conseil:"Documenter les trois processus les plus fréquents et associer à chacun un indicateur suivi chaque mois." },
-      { cle:"system_centralization", libelle:"Centralisation des systèmes",
-        enonces:[
-          "Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement.",
-          "Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan."
-        ],
-        conseil:"Désigner un système de référence par type d'information et y migrer ce qui vit encore dans les fichiers locaux et les courriels." }
+      { cle:"visibility", libelle:{ fr:"Visibilité et contrôle", en:"Visibility and control" },
+        enonces:{
+          fr:[ "J'ai une vue d'ensemble de l'exécution de mes projets en cours sans avoir à consulter chaque personne.",
+               "L'avancement et les coûts de nos projets sont à jour et consultables en tout temps, pas seulement à la réunion hebdomadaire." ],
+          en:[ "I have an overview of how my current projects are progressing without having to ask each person.",
+               "Our project progress and costs are up to date and available at any time, not only at the weekly meeting." ]
+        },
+        conseil:{ fr:"Mettre en place un tableau de bord de projets alimenté par vos outils existants, revu à fréquence fixe.",
+                  en:"Set up a project dashboard fed by your existing tools and reviewed at a fixed frequency." } },
+      { cle:"process_maturity", libelle:{ fr:"Maturité des processus", en:"Process maturity" },
+        enonces:{
+          fr:[ "Nos façons de faire sont documentées et appliquées de la même manière d'un projet à l'autre.",
+               "Nos processus sont mesurés et révisés selon un cycle défini, pas seulement lorsqu'un problème survient." ],
+          en:[ "Our ways of working are documented and applied the same way from one project to the next.",
+               "Our processes are measured and reviewed on a set cycle, not only when a problem occurs." ]
+        },
+        conseil:{ fr:"Documenter les trois processus les plus fréquents et associer à chacun un indicateur suivi chaque mois.",
+                  en:"Document your three most frequent processes and attach a monthly indicator to each one." } },
+      { cle:"system_centralization", libelle:{ fr:"Centralisation des systèmes", en:"System centralization" },
+        enonces:{
+          fr:[ "Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement.",
+               "Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan." ],
+          en:[ "Our teams work in company-wide platforms rather than in tools chosen individually.",
+               "Each piece of information has a single system of record: there are no multiple versions of the same schedule, budget or drawing." ]
+        },
+        conseil:{ fr:"Désigner un système de référence par type d'information et y migrer ce qui vit encore dans les fichiers locaux et les courriels.",
+                  en:"Designate one system of record per type of information and migrate what still lives in local files and emails." } }
     ]
   },
   {
-    cle:"ai_integration", libelle:"Intégration de l'IA", couleur:"var(--sarcelle)",
-    niveaux:[
-      "L'IA est absente ou à l'essai chez quelques personnes, sans cadre. Le risque tient surtout aux données qui circulent sans règles.",
-      "Des usages existent, mais sans gouvernance ni mesure. Les gains restent individuels et difficiles à généraliser.",
-      "L'IA est encadrée et utilisée dans plusieurs équipes. Il reste à structurer les données pour en tirer davantage.",
-      "L'IA est intégrée à vos façons de faire, avec des gains mesurés et des données prêtes à être exploitées."
-    ],
+    cle:"ai_integration", libelle:{ fr:"Intégration de l'IA", en:"AI integration" }, couleur:"var(--sarcelle)",
+    niveaux:{
+      fr:[
+        "L'IA est absente ou à l'essai chez quelques personnes, sans cadre. Le risque tient surtout aux données qui circulent sans règles.",
+        "Des usages existent, mais sans gouvernance ni mesure. Les gains restent individuels et difficiles à généraliser.",
+        "L'IA est encadrée et utilisée dans plusieurs équipes. Il reste à structurer les données pour en tirer davantage.",
+        "L'IA est intégrée à vos façons de faire, avec des gains mesurés et des données prêtes à être exploitées."
+      ],
+      en:[
+        "AI is absent or being tried by a few people, without a framework. The main risk is data circulating without rules.",
+        "Some uses exist, but without governance or measurement. Gains remain individual and hard to generalize.",
+        "AI is governed and used across several teams. Structuring your data is what remains to get more out of it.",
+        "AI is embedded in your ways of working, with measured gains and data ready to be used."
+      ]
+    },
     sections:[
-      { cle:"ai_adoption", libelle:"Adoption",
-        enonces:[
-          "Mes équipes utilisent des outils d'intelligence artificielle dans leur travail courant, pas seulement à l'essai.",
-          "L'usage de l'IA est répandu dans plusieurs équipes, pas porté par une ou deux personnes."
-        ],
-        conseil:"Identifier deux tâches répétitives par équipe et y introduire un outil d'IA avec un accompagnement court." },
-      { cle:"ai_governance", libelle:"Gouvernance",
-        enonces:[
-          "Nous avons des règles écrites sur les informations qui peuvent être soumises à un outil d'IA externe.",
-          "Une personne est responsable des choix d'outils d'IA et de leurs usages dans l'entreprise."
-        ],
-        conseil:"Rédiger une politique d'usage d'une page : données permises, outils approuvés, personne responsable." },
-      { cle:"data_readiness", libelle:"Préparation des données",
-        enonces:[
-          "Nos données de projet sont assez structurées et centralisées pour être exploitées par un outil d'IA.",
-          "L'historique de nos projets est accessible et consultable, pas enfoui dans des courriels et des dossiers personnels."
-        ],
-        conseil:"Structurer d'abord les données de projet les plus demandées : coûts, échéanciers, décisions." }
+      { cle:"ai_adoption", libelle:{ fr:"Adoption", en:"Adoption" },
+        enonces:{
+          fr:[ "Mes équipes utilisent des outils d'intelligence artificielle dans leur travail courant, pas seulement à l'essai.",
+               "L'usage de l'IA est répandu dans plusieurs équipes, pas porté par une ou deux personnes." ],
+          en:[ "My teams use artificial intelligence tools in their day-to-day work, not just as a trial.",
+               "AI use is widespread across several teams, not carried by one or two people." ]
+        },
+        conseil:{ fr:"Identifier deux tâches répétitives par équipe et y introduire un outil d'IA avec un accompagnement court.",
+                  en:"Identify two repetitive tasks per team and introduce an AI tool for them with short guidance." } },
+      { cle:"ai_governance", libelle:{ fr:"Gouvernance", en:"Governance" },
+        enonces:{
+          fr:[ "Nous avons des règles écrites sur les informations qui peuvent être soumises à un outil d'IA externe.",
+               "Une personne est responsable des choix d'outils d'IA et de leurs usages dans l'entreprise." ],
+          en:[ "We have written rules about which information may be submitted to an external AI tool.",
+               "One person is responsible for AI tool choices and their use in the company." ]
+        },
+        conseil:{ fr:"Rédiger une politique d'usage d'une page : données permises, outils approuvés, personne responsable.",
+                  en:"Write a one-page usage policy: permitted data, approved tools, responsible person." } },
+      { cle:"data_readiness", libelle:{ fr:"Préparation des données", en:"Data readiness" },
+        enonces:{
+          fr:[ "Nos données de projet sont assez structurées et centralisées pour être exploitées par un outil d'IA.",
+               "L'historique de nos projets est accessible et consultable, pas enfoui dans des courriels et des dossiers personnels." ],
+          en:[ "Our project data is structured and centralized enough to be used by an AI tool.",
+               "Our project history is accessible and searchable, not buried in emails and personal folders." ]
+        },
+        conseil:{ fr:"Structurer d'abord les données de projet les plus demandées : coûts, échéanciers, décisions.",
+                  en:"Structure the most requested project data first: costs, schedules, decisions." } }
     ]
   },
   {
-    cle:"bim_maturity", libelle:"Maturité BIM", couleur:"var(--rouille)", bimSeulement:true,
-    niveaux:[
-      "Le BIM est subi plutôt que maîtrisé : la maquette existe parfois, mais le travail réel se fait encore en 2D ou sur papier.",
-      "La maquette est utilisée, mais les processus dépendent des personnes et les échanges demandent des reprises.",
-      "Vos processus BIM sont formalisés et vos échanges fiables. Le BIM commence à peser dans vos soumissions.",
-      "Le BIM est un avantage concurrentiel : processus maîtrisés, données réutilisées, exigences dépassées."
-    ],
+    cle:"bim_maturity", libelle:{ fr:"Maturité BIM", en:"BIM maturity" }, couleur:"var(--rouille)", bimSeulement:true,
+    niveaux:{
+      fr:[
+        "Le BIM est subi plutôt que maîtrisé : la maquette existe parfois, mais le travail réel se fait encore en 2D ou sur papier.",
+        "La maquette est utilisée, mais les processus dépendent des personnes et les échanges demandent des reprises.",
+        "Vos processus BIM sont formalisés et vos échanges fiables. Le BIM commence à peser dans vos soumissions.",
+        "Le BIM est un avantage concurrentiel : processus maîtrisés, données réutilisées, exigences dépassées."
+      ],
+      en:[
+        "BIM is endured rather than mastered: a model sometimes exists, but the real work is still done in 2D or on paper.",
+        "The model is used, but processes depend on people and exchanges require rework.",
+        "Your BIM processes are formalized and your exchanges reliable. BIM is starting to weigh in your bids.",
+        "BIM is a competitive advantage: mastered processes, reused data, requirements exceeded."
+      ]
+    },
     sections:[
-      { cle:"bim_process", libelle:"Processus BIM",
+      { cle:"bim_process", libelle:{ fr:"Processus BIM", en:"BIM process" },
         enonces:{
-          conception:[
-            "Chaque mandat démarre avec un plan d'exécution BIM qui définit les livrables et les niveaux de détail par phase.",
-            "Nos gabarits, nos bibliothèques et nos normes de modélisation sont communs à tous les projets."
-          ],
-          realisation:[
-            "La coordination avec nos sous-traitants suit un cycle formalisé : les conflits sont détectés avant l'installation.",
-            "Nos exigences BIM envers les sous-traitants sont écrites dans les contrats et vérifiées."
-          ],
-          donneur_ouvrage:[
-            "Nos appels d'offres précisent les livrables BIM attendus, et nous vérifions les maquettes reçues avant de les accepter.",
-            "Un responsable BIM est désigné de notre côté sur chaque projet, avec un mandat clair."
-          ]
+          conception:{
+            fr:[ "Chaque mandat démarre avec un plan d'exécution BIM qui définit les livrables et les niveaux de détail par phase.",
+                 "Nos gabarits, nos bibliothèques et nos normes de modélisation sont communs à tous les projets." ],
+            en:[ "Every mandate starts with a BIM execution plan that defines deliverables and levels of detail per phase.",
+                 "Our templates, libraries and modeling standards are shared across all projects." ]
+          },
+          realisation:{
+            fr:[ "La coordination avec nos sous-traitants suit un cycle formalisé : les conflits sont détectés avant l'installation.",
+                 "Nos exigences BIM envers les sous-traitants sont écrites dans les contrats et vérifiées." ],
+            en:[ "Coordination with our subcontractors follows a formal cycle: clashes are detected before installation.",
+                 "Our BIM requirements for subcontractors are written into contracts and verified." ]
+          },
+          donneur_ouvrage:{
+            fr:[ "Nos appels d'offres précisent les livrables BIM attendus, et nous vérifions les maquettes reçues avant de les accepter.",
+                 "Un responsable BIM est désigné de notre côté sur chaque projet, avec un mandat clair." ],
+            en:[ "Our tenders specify the expected BIM deliverables, and we check the models we receive before accepting them.",
+                 "A BIM lead is designated on our side for every project, with a clear mandate." ]
+          }
         },
-        conseil:"Rédiger un plan d'exécution BIM type et l'imposer dès le démarrage de chaque projet." },
-      { cle:"data_exchange", libelle:"Échange des données",
+        conseil:{ fr:"Rédiger un plan d'exécution BIM type et l'imposer dès le démarrage de chaque projet.",
+                  en:"Write a standard BIM execution plan and require it from the start of every project." } },
+      { cle:"data_exchange", libelle:{ fr:"Échange des données", en:"Data exchange" },
         enonces:{
-          conception:[
-            "Les modèles échangés entre disciplines sont exploitables tels quels, sans reconstruction ni reprise.",
-            "Nos quantitatifs et nos tableaux sont extraits de la maquette et réutilisés sans ressaisie."
-          ],
-          realisation:[
-            "Nous extrayons des quantitatifs de la maquette et ils alimentent directement nos estimations.",
-            "Les maquettes reçues des concepteurs sont exploitables sans reconstruction par notre équipe."
-          ],
-          donneur_ouvrage:[
-            "Les données du projet sont transférées vers nos systèmes d'exploitation à la réception du bâtiment.",
-            "Les maquettes de nos différents projets suivent un format commun qui permet de les comparer."
-          ]
+          conception:{
+            fr:[ "Les modèles échangés entre disciplines sont exploitables tels quels, sans reconstruction ni reprise.",
+                 "Nos quantitatifs et nos tableaux sont extraits de la maquette et réutilisés sans ressaisie." ],
+            en:[ "Models exchanged between disciplines are usable as is, without rebuilding or rework.",
+                 "Our quantities and schedules are extracted from the model and reused without re-entry." ]
+          },
+          realisation:{
+            fr:[ "Nous extrayons des quantitatifs de la maquette et ils alimentent directement nos estimations.",
+                 "Les maquettes reçues des concepteurs sont exploitables sans reconstruction par notre équipe." ],
+            en:[ "We extract quantities from the model and they feed directly into our estimates.",
+                 "The models we receive from designers are usable without our team rebuilding them." ]
+          },
+          donneur_ouvrage:{
+            fr:[ "Les données du projet sont transférées vers nos systèmes d'exploitation à la réception du bâtiment.",
+                 "Les maquettes de nos différents projets suivent un format commun qui permet de les comparer." ],
+            en:[ "Project data is transferred to our operations systems when the building is handed over.",
+                 "The models of our various projects follow a common format that allows comparison." ]
+          }
         },
-        conseil:"Fixer un format d'échange et un niveau de détail par livrable, et vérifier chaque maquette reçue selon ces critères." }
+        conseil:{ fr:"Fixer un format d'échange et un niveau de détail par livrable, et vérifier chaque maquette reçue selon ces critères.",
+                  en:"Set an exchange format and a level of detail per deliverable, and check every model received against those criteria." } }
     ]
   }
 ];
 
-/* Les quatre paliers, pour les axes comme pour les sous-sections.
-   `slug` est la valeur interne des listes *_level dans HubSpot. */
+/* Les quatre paliers, pour les axes comme pour les sous-sections. */
 const NIVEAUX = [
-  { slug:"first_milestones",  libelle:"Premiers jalons" },
-  { slug:"momentum_building", libelle:"Élan amorcé" },
-  { slug:"well_advanced",     libelle:"Bien avancé" },
-  { slug:"leader",            libelle:"Chef de file" }
+  { slug:"first_milestones",  libelle:{ fr:"Premiers jalons", en:"First milestones" } },
+  { slug:"momentum_building", libelle:{ fr:"Élan amorcé",     en:"Momentum building" } },
+  { slug:"well_advanced",     libelle:{ fr:"Bien avancé",     en:"Well advanced" } },
+  { slug:"leader",            libelle:{ fr:"Chef de file",    en:"Leader" } }
 ];
 
-/* Une moyenne par énoncé (1 à 5) se convertit en palier et en score sur 100. */
 function rangDeMoyenne(m){
   if(m <= 2.0) return 0;
   if(m <= 3.0) return 1;
@@ -294,7 +405,7 @@ function rangDeMoyenne(m){
 function scoreSur100(m){ return Math.round((m - 1) / 4 * 100); }
 
 /* ==========================================================================
-   4. ÉTAT
+   5. ÉTAT
    ========================================================================== */
 let etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null };
 
@@ -307,10 +418,12 @@ function categorie(){ return CATEGORIES.find(c => c.valeur === etat.categorie) |
 function bimEvalue(){ return !!categorie().bim; }
 function axesEvalues(){ return AXES.filter(a => !a.bimSeulement || bimEvalue()); }
 
-/* Les énoncés d'une sous-section, selon la famille pour le BIM. */
+/* Les énoncés d'une sous-section dans la langue choisie, selon la famille pour le BIM. */
 function enoncesDe(section){
-  if(Array.isArray(section.enonces)) return section.enonces;
-  return section.enonces[categorie().famille] || section.enonces.conception;
+  const e = section.enonces;
+  if(e.fr) return e[LANG] || e.fr;
+  const fam = e[categorie().famille] || e.conception;
+  return fam[LANG] || fam.fr;
 }
 
 /* La liste ordonnée des énoncés : axe par axe, sous-section par sous-section.
@@ -331,38 +444,47 @@ function progression(pct, texte){
   compteur.textContent = texte;
 }
 
+function appliquerLangue(){
+  document.documentElement.lang = LANG === "en" ? "en-CA" : "fr-CA";
+  document.title = t(UI.titrePage);
+  document.getElementById("sous-titre").textContent = t(UI.sousTitre);
+}
+
 /* ==========================================================================
-   5. ÉCRANS
+   6. ÉCRANS
    ========================================================================== */
-function ecranAccueil(){
+function ecranLangue(){
   progression(null);
   scene.innerHTML = `
-    <h1>Où en est votre organisation dans sa transformation numérique ?</h1>
-    <p class="plein">Seize énoncés, environ quatre minutes. Pour chaque énoncé, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
-    <p>Votre situation est ensuite lue sur trois axes : gestion opérationnelle, intégration de l'IA et maturité BIM. Chaque axe se décompose en sous-sections qui indiquent précisément par où commencer. Le volet BIM s'adapte au type d'activité que vous exercez.</p>
-    <div class="boutons"><button class="primaire" id="go">Commencer</button></div>
+    <h2>Choisissez votre langue &nbsp;·&nbsp; Choose your language</h2>
+    <div class="langues">
+      <button class="langue" data-lang="fr">Français</button>
+      <button class="langue" data-lang="en">English</button>
+    </div>
   `;
-  document.getElementById("go").onclick = ecranProfil;
+  scene.querySelectorAll(".langue").forEach(b => {
+    b.onclick = () => { LANG = b.dataset.lang; appliquerLangue(); ecranProfil(); };
+  });
 }
 
 function ecranProfil(){
-  progression(0, "Profil de votre organisation");
+  progression(0, t(UI.profilEtape));
   scene.innerHTML = `
-    <h2>D'abord, votre organisation</h2>
-    <p>Deux précisions qui servent à adapter les énoncés suivants à votre réalité.</p>
-    <label class="champ" for="cat">Votre principale activité en construction</label>
+    <h2>${t(UI.profilTitre)}</h2>
+    <p>${t(UI.profilTexte)}</p>
+    <label class="champ" for="cat">${t(UI.champActivite)}</label>
     <select id="cat">
-      <option value="">Sélectionnez</option>
-      ${CATEGORIES.map(c => `<option value="${c.valeur}" ${etat.categorie===c.valeur?"selected":""}>${c.libelle}</option>`).join("")}
+      <option value="">${t(UI.selectionnez)}</option>
+      ${CATEGORIES.map(c => `<option value="${c.valeur}" ${etat.categorie===c.valeur?"selected":""}>${t(c.libelle)}</option>`).join("")}
     </select>
-    <label class="champ" for="tai">Taille de votre organisation</label>
+    <label class="champ" for="tai">${t(UI.champTaille)}</label>
     <select id="tai">
-      <option value="">Sélectionnez</option>
-      ${TAILLES.map(t => `<option value="${t.valeur}" ${etat.taille===t.valeur?"selected":""}>${t.libelle}</option>`).join("")}
+      <option value="">${t(UI.selectionnez)}</option>
+      ${TAILLES.map(x => `<option value="${x.valeur}" ${etat.taille===x.valeur?"selected":""}>${t(x.libelle)}</option>`).join("")}
     </select>
     <div class="boutons">
-      <button class="primaire" id="suivant" disabled>Continuer</button>
-      <button class="discret" id="retour">Retour</button>
+      <button class="primaire" id="suivant" disabled>${t(UI.continuer)}</button>
+      <button class="discret" id="retour">${t(UI.retour)}</button>
     </div>
   `;
   const cat = document.getElementById("cat");
@@ -379,7 +501,7 @@ function ecranProfil(){
     etat.index = 0;
     ecranEnonce();
   };
-  document.getElementById("retour").onclick = ecranAccueil;
+  document.getElementById("retour").onclick = ecranLangue;
 }
 
 function ecranEnonce(){
@@ -387,19 +509,20 @@ function ecranEnonce(){
   const c = items[etat.index];
   const axe = AXES.find(a => a.cle === c.axe);
   const section = axe.sections.find(s => s.cle === c.section);
-  progression(Math.round((etat.index / items.length) * 100), `Énoncé ${etat.index + 1} sur ${items.length}`);
+  progression(Math.round((etat.index / items.length) * 100),
+              t(UI.enonceSur).replace("{i}", etat.index + 1).replace("{n}", items.length));
 
   scene.innerHTML = `
-    <span class="axe-etiquette axe-${axe.cle}">${axe.libelle} · ${section.libelle}</span>
+    <span class="axe-etiquette axe-${axe.cle}">${t(axe.libelle)} · ${t(section.libelle)}</span>
     <p class="enonce">${c.texte}</p>
     <div class="echelle">
       ${ECHELLE.map(e => `
         <button class="cran ${etat.reponses[c.cle]===e.note?"choisi":""}" data-note="${e.note}">
-          <b>${e.note}</b><small>${e.ancre}</small>
+          <b>${e.note}</b><small>${t(e.ancre)}</small>
         </button>`).join("")}
     </div>
     <div class="boutons" style="margin-top:18px">
-      <button class="discret" id="retour">${etat.index === 0 ? "Modifier le profil" : "Énoncé précédent"}</button>
+      <button class="discret" id="retour">${etat.index === 0 ? t(UI.modifierProfil) : t(UI.enoncePrecedent)}</button>
     </div>
   `;
   scene.querySelectorAll(".cran").forEach(el => {
@@ -416,7 +539,7 @@ function ecranEnonce(){
 }
 
 /* ==========================================================================
-   6. CALCUL
+   7. CALCUL
    Sous-section = moyenne de ses énoncés. Axe = moyenne de ses sous-sections.
    Chaque niveau est converti en palier et en score sur 100. Pas de score global :
    chaque axe reçoit sa propre recommandation, sur sa sous-section la plus faible.
@@ -425,13 +548,13 @@ function calculer(){
   const axes = axesEvalues().map(a => {
     const sections = a.sections.map(s => {
       const notes = enoncesDe(s).map((_, i) => etat.reponses[s.cle + "|" + i] || 0);
-      const moyenne = notes.reduce((t, n) => t + n, 0) / notes.length;
-      return { cle:s.cle, libelle:s.libelle, conseil:s.conseil, notes, moyenne,
-               score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
+      const moyenne = notes.reduce((tot, n) => tot + n, 0) / notes.length;
+      return { cle:s.cle, libelle:t(s.libelle), conseil:t(s.conseil), notes, moyenne,
+               score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne), def:s };
     });
-    const moyenne = sections.reduce((t, s) => t + s.moyenne, 0) / sections.length;
-    const prio = sections.slice().sort((x, y) => x.moyenne - y.moyenne)[0];   // sous-section la plus faible de l'axe
-    return { cle:a.cle, libelle:a.libelle, couleur:a.couleur, niveaux:a.niveaux, sections, moyenne, prio,
+    const moyenne = sections.reduce((tot, s) => tot + s.moyenne, 0) / sections.length;
+    const prio = sections.slice().sort((x, y) => x.moyenne - y.moyenne)[0];
+    return { cle:a.cle, libelle:t(a.libelle), couleur:a.couleur, niveaux:t(a.niveaux), sections, moyenne, prio,
              score:scoreSur100(moyenne), rang:rangDeMoyenne(moyenne) };
   });
   etat.resultat = { axes, bim:bimEvalue() };
@@ -439,36 +562,30 @@ function calculer(){
 
 function detailReponses(){
   const cat = CATEGORIES.find(c => c.valeur === etat.categorie);
-  const tai = TAILLES.find(t => t.valeur === etat.taille);
+  const tai = TAILLES.find(x => x.valeur === etat.taille);
   const r = etat.resultat;
   const lignes = [
-    `Diagnostic de maturité numérique · ${new Date().toISOString().split("T")[0]}`,
-    `Activité : ${cat ? cat.libelle : etat.categorie} · Taille : ${tai ? tai.libelle : etat.taille}`,
-    `Échelle : accord de 1 à 5. Score = (moyenne - 1) / 4 x 100.`,
-    r.bim ? "" : "Volet BIM non évalué (activité sans BIM).",
+    `${t(UI.sousTitre)} · ${new Date().toISOString().split("T")[0]}`,
+    `${t(UI.detailActivite)} : ${cat ? t(cat.libelle) : etat.categorie} · ${t(UI.detailTaille)} : ${tai ? t(tai.libelle) : etat.taille}`,
+    t(UI.detailEchelle),
+    r.bim ? "" : t(UI.detailSansBim),
     ""
   ];
   r.axes.forEach(a => {
-    lignes.push(`${a.libelle} : ${a.score}/100 · ${NIVEAUX[a.rang].libelle}`);
+    lignes.push(`${a.libelle} : ${a.score}/100 · ${t(NIVEAUX[a.rang].libelle)}`);
     a.sections.forEach(s => {
-      lignes.push(`   ${s.libelle} : ${s.score}/100 · ${NIVEAUX[s.rang].libelle}`);
-      enoncesDe(AXES.find(x => x.cle === a.cle).sections.find(x => x.cle === s.cle)).forEach((texte, i) => {
-        lignes.push(`      ${s.notes[i]}/5 : ${texte}`);
-      });
+      lignes.push(`   ${s.libelle} : ${s.score}/100 · ${t(NIVEAUX[s.rang].libelle)}`);
+      enoncesDe(s.def).forEach((texte, i) => lignes.push(`      ${s.notes[i]}/5 : ${texte}`));
     });
     lignes.push("");
   });
-  r.axes.forEach(a => lignes.push(`Priorité ${a.libelle} : ${a.prio.libelle}`));
-  return lignes.filter(l => l !== null).join("\n");
+  r.axes.forEach(a => lignes.push(`${t(UI.detailPriorite)} ${a.libelle} : ${a.prio.libelle}`));
+  return lignes.join("\n");
 }
 
 /* ==========================================================================
-   7. CONTACT ET ENVOI HUBSPOT
-   L'utilisateur s'est identifié à la connexion au site : on envoie le résultat
-   avec les informations du compte, sans bloquer l'affichage. Sans compte, un
-   écran de coordonnées s'affiche avant les résultats.
+   8. CONTACT ET ENVOI HUBSPOT
    ========================================================================== */
-/* Le contact connecté au site (nom complet séparé en prénom et nom). */
 function contactConnecte(){
   let contact = { prenom:"", nom:"", entreprise:"", courriel:"" };
   try {
@@ -484,17 +601,15 @@ function contactConnecte(){
 }
 
 function finaliser(){
-  progression(100, "Terminé");
+  progression(100, t(UI.termine));
   ecranResultats();
 }
 
-/* Bouton « Envoyer » : soumet le résultat à HubSpot, qui l'expédie au contact
-   par courriel. Sans compte connu, on demande d'abord les coordonnées. */
 async function envoyerResultats(bouton){
   const contact = contactConnecte();
   if(!contact.courriel){ ecranGate(); return; }
   bouton.disabled = true;
-  bouton.textContent = "Envoi en cours…";
+  bouton.textContent = t(UI.envoiEnCours);
   try {
     await envoyerHubSpot(contact);
     etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
@@ -507,30 +622,30 @@ async function envoyerResultats(bouton){
 
 function messageEnvoi(){
   const contact = contactConnecte();
-  if(etat.envoye === "ok")      return `<p class="envoi-note envoi-ok">Résultats envoyés. Vous recevrez votre rapport à ${contact.courriel}.</p>`;
-  if(etat.envoye === "inactif") return `<p class="envoi-note">Résultats enregistrés. L'envoi par courriel sera actif une fois la connexion à HubSpot configurée.</p>`;
-  if(etat.envoye === "echec")   return `<p class="envoi-note envoi-echec">L'envoi n'a pas fonctionné. Réessayez dans un instant ou écrivez-nous à Info@archiaid.ca.</p>`;
+  if(etat.envoye === "ok")      return `<p class="envoi-note envoi-ok">${t(UI.envoiOk).replace("{e}", contact.courriel)}</p>`;
+  if(etat.envoye === "inactif") return `<p class="envoi-note">${t(UI.envoiInactif)}</p>`;
+  if(etat.envoye === "echec")   return `<p class="envoi-note envoi-echec">${t(UI.envoiEchec)}</p>`;
   return "";
 }
 
 function ecranGate(){
-  progression(100, "Terminé");
+  progression(100, t(UI.termine));
   scene.innerHTML = `
-    <h2>Où vous envoyer vos résultats ?</h2>
-    <p>Indiquez où vous joindre : vous recevrez votre rapport par courriel.</p>
-    <label class="champ" for="prenom">Prénom</label>
+    <h2>${t(UI.gateTitre)}</h2>
+    <p>${t(UI.gateTexte)}</p>
+    <label class="champ" for="prenom">${t(UI.prenom)}</label>
     <input type="text" id="prenom" autocomplete="given-name">
-    <label class="champ" for="nom">Nom</label>
+    <label class="champ" for="nom">${t(UI.nom)}</label>
     <input type="text" id="nom" autocomplete="family-name">
-    <label class="champ" for="entreprise">Entreprise</label>
+    <label class="champ" for="entreprise">${t(UI.entreprise)}</label>
     <input type="text" id="entreprise" autocomplete="organization">
-    <label class="champ" for="courriel">Courriel professionnel</label>
+    <label class="champ" for="courriel">${t(UI.courriel)}</label>
     <input type="email" id="courriel" autocomplete="email">
     <div class="consentement">
       <input type="checkbox" id="consent">
-      <label for="consent">J'accepte que Solutions Archi Aid inc. conserve ces renseignements pour me transmettre mon résultat et communiquer avec moi à ce sujet. Je peux retirer ce consentement en tout temps en écrivant à l'adresse indiquée dans les communications reçues.</label>
+      <label for="consent">${t(UI.consentement)}</label>
     </div>
-    <div class="boutons"><button class="primaire" id="voir" disabled>Envoyer</button></div>
+    <div class="boutons"><button class="primaire" id="voir" disabled>${t(UI.envoyer)}</button></div>
   `;
   const champs = ["prenom","nom","entreprise","courriel"].map(id => document.getElementById(id));
   const consent = document.getElementById("consent");
@@ -545,7 +660,7 @@ function ecranGate(){
   consent.onchange = valide;
   voir.onclick = async () => {
     voir.disabled = true;
-    voir.textContent = "Envoi en cours";
+    voir.textContent = t(UI.envoiEnCours);
     const contact = {
       prenom:document.getElementById("prenom").value.trim(),
       nom:document.getElementById("nom").value.trim(),
@@ -596,8 +711,7 @@ async function envoyerHubSpot(contact){
         body:JSON.stringify({
           fields:champs,
           context:{ pageUri:window.location.href, pageName:document.title },
-          legalConsentOptions:{ consent:{ consentToProcess:true,
-            text:"J'accepte que Solutions Archi Aid inc. conserve ces renseignements pour me transmettre mon résultat et communiquer avec moi à ce sujet." } }
+          legalConsentOptions:{ consent:{ consentToProcess:true, text:UI.consentement[LANG] } }
         })
       }
     );
@@ -606,8 +720,6 @@ async function envoyerHubSpot(contact){
   try {
     await soumettre(tous);
   } catch(e){
-    // HubSpot rejette toute la soumission si un champ manque au formulaire.
-    // On réessaie avec le contact et le détail texte seulement, pour ne pas perdre le prospect.
     console.warn("Soumission complète refusée, nouvelle tentative avec les champs de base. Vérifiez que toutes les propriétés sont sur le formulaire.", e);
     const base = ["email","firstname","lastname","company"];
     await soumettre(tous.filter(c => base.includes(c.name)));
@@ -615,7 +727,7 @@ async function envoyerHubSpot(contact){
 }
 
 /* ==========================================================================
-   8. RÉSULTATS
+   9. RÉSULTATS
    ========================================================================== */
 function ecranResultats(){
   const r = etat.resultat;
@@ -623,8 +735,8 @@ function ecranResultats(){
   const cartes = r.axes.map(a => `
     <div class="score-carte">
       <div class="score-nom">${a.libelle}</div>
-      <div class="score-chiffre" style="color:${a.couleur}">${a.score}<span class="score-sur"> / 100</span></div>
-      <div class="score-niveau">${NIVEAUX[a.rang].libelle}</div>
+      <div class="score-chiffre" style="color:${a.couleur}">${a.score}<span class="score-sur">${t(UI.sur100)}</span></div>
+      <div class="score-niveau">${t(NIVEAUX[a.rang].libelle)}</div>
       <div class="axe-jauge"><span style="width:${a.score}%;background:${a.couleur}"></span></div>
     </div>`).join("");
 
@@ -632,52 +744,47 @@ function ecranResultats(){
     <div class="bloc-axe">
       <div class="bloc-entete">
         <h3>${a.libelle}</h3>
-        <span class="bloc-niveau">${a.score} / 100 · ${NIVEAUX[a.rang].libelle}</span>
+        <span class="bloc-niveau">${a.score} / 100 · ${t(NIVEAUX[a.rang].libelle)}</span>
       </div>
       <p class="bloc-texte">${a.niveaux[a.rang]}</p>
-      ${a.sections.map(s => {
-        const prio = s.cle === a.prio.cle;
-        return `
-        <div class="sous ${prio ? "prio" : ""}">
+      ${a.sections.map(s => `
+        <div class="sous ${s.cle === a.prio.cle ? "prio" : ""}">
           <span class="sous-nom">${s.libelle}</span>
           <div class="axe-jauge"><span style="width:${s.score}%;background:${a.couleur}"></span></div>
-          <span class="sous-val">${s.score} · ${NIVEAUX[s.rang].libelle}</span>
-        </div>`;
-      }).join("")}
+          <span class="sous-val">${s.score} · ${t(NIVEAUX[s.rang].libelle)}</span>
+        </div>`).join("")}
       <div class="encadre encadre-axe">
-        <h3>Par où commencer</h3>
-        <p>Votre point d'appui le plus faible sur cet axe est <strong>${a.prio.libelle.toLowerCase()}</strong>. ${a.prio.conseil}</p>
+        <h3>${t(UI.parOuCommencer)}</h3>
+        <p>${t(UI.pointFaible).replace("{s}", a.prio.libelle.toLowerCase())}${a.prio.conseil}</p>
       </div>
     </div>`).join("");
 
   scene.innerHTML = `
-    <h2>Vos scores de maturité</h2>
-    <p>Chaque axe est calculé sur ses propres sous-sections. Il est normal qu'ils ne se situent pas au même niveau : c'est l'écart entre eux qui indique par où commencer.</p>
+    <h2>${t(UI.scoresTitre)}</h2>
     <div class="scores ${r.axes.length === 2 ? "deux" : ""}">${cartes}</div>
-    ${r.bim ? "" : `<div class="note-bim">Le volet Maturité BIM n'a pas été évalué : votre type d'activité n'implique pas la maquette numérique.</div>`}
+    ${r.bim ? "" : `<div class="note-bim">${t(UI.bimNonEvalue)}</div>`}
 
-    <h3>Le détail par sous-section</h3>
-    <p>Chaque sous-section est notée sur 100. Dans chaque axe, la ligne mise en évidence est celle où votre score est le plus faible : c'est par là qu'il faut commencer.</p>
+    <h3 class="titre-details">${t(UI.details)}</h3>
     ${blocs}
 
     ${messageEnvoi()}
     <div class="boutons" data-html2canvas-ignore>
-      <button class="primaire" id="envoyer" ${etat.envoye === "ok" ? "disabled" : ""}>${etat.envoye === "ok" ? "Envoyé" : "Envoyer"}</button>
-      <button class="discret" id="refaire">Refaire le diagnostic</button>
+      <button class="primaire" id="envoyer" ${etat.envoye === "ok" ? "disabled" : ""}>${etat.envoye === "ok" ? t(UI.envoye) : t(UI.envoyer)}</button>
+      <button class="discret" id="refaire">${t(UI.refaire)}</button>
     </div>
   `;
 
   document.getElementById("envoyer").onclick = (e) => envoyerResultats(e.currentTarget);
   document.getElementById("refaire").onclick = () => {
     etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null };
-    ecranAccueil();
+    ecranLangue();
   };
 }
 
-ecranAccueil();
+ecranLangue();
 
 /* ==========================================================================
-   9. INTÉGRATION EN IFRAME
+   10. INTÉGRATION EN IFRAME
    Communique la hauteur réelle du contenu à une page qui l'héberge, pour que
    l'iframe s'ajuste au lieu d'afficher une barre de défilement interne.
    Sans effet si la page est ouverte directement.
@@ -696,34 +803,6 @@ ecranAccueil();
   setInterval(annoncer, 500);
   annoncer();
 })();
-</script>
-
-<!-- ==========================================================================
-     10. TÉLÉCHARGEMENT PDF
-     Convertit la carte de résultats en PDF téléchargeable (html2pdf).
-     En cas d'échec (hors ligne, blocage du CDN), on retombe sur l'impression
-     du navigateur, qui permet aussi d'enregistrer en PDF.
-     ========================================================================== -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script>
-function telechargerPDF(selecteur, nomFichier, bouton){
-  const cible = document.querySelector(selecteur);
-  if(!cible) return;
-  const texteInitial = bouton ? bouton.textContent : "";
-  const retablir = () => { if(bouton){ bouton.disabled = false; bouton.textContent = texteInitial; } };
-  if(bouton){ bouton.disabled = true; bouton.textContent = "Génération du PDF…"; }
-  if(typeof html2pdf === "undefined"){ retablir(); window.print(); return; }
-  html2pdf().set({
-    margin:[10, 8, 12, 8],
-    filename:nomFichier,
-    image:{ type:"jpeg", quality:0.95 },
-    html2canvas:{ scale:2, useCORS:true, backgroundColor:"#ffffff" },
-    jsPDF:{ unit:"mm", format:"a4", orientation:"portrait" },
-    pagebreak:{ mode:["avoid-all", "css", "legacy"] }
-  }).from(cible).save()
-    .then(retablir)
-    .catch(function(e){ console.error("PDF échoué :", e); retablir(); window.print(); });
-}
 </script>
 </body>
 </html>
