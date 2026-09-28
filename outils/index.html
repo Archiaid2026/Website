@@ -11,10 +11,22 @@
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="icon" type="image/png" href="../assets/img/logo.png">
   <script>
+    // Langue de la page : celle du site d'où l'on vient (?lang=), sinon celle mémorisée
+    // à la connexion, sinon le français.
+    var LANG = "fr";
+    try {
+      var param = new URLSearchParams(window.location.search).get("lang");
+      var memo = localStorage.getItem("archiaid_lang");
+      LANG = (param || memo || "fr").slice(0, 2) === "en" ? "en" : "fr";
+      localStorage.setItem("archiaid_lang", LANG);
+    } catch (e) {}
+    document.documentElement.lang = LANG;
+    var SITE_HOME = LANG === "en" ? "../index.html" : "../fr/index.html";
+
     // Accès réservé aux personnes connectées (vérification côté client seulement)
     try {
       if (!localStorage.getItem("archiaid_user")) {
-        window.location.replace("../fr/index.html");
+        window.location.replace(SITE_HOME);
       }
     } catch (e) {}
   </script>
@@ -22,8 +34,7 @@
     .tools-hero { background: var(--hero-bg); padding-block: 3rem 2.5rem; }
     .tools-hero h1 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.6rem; }
     .tools-hero p { color: var(--text-grey); font-size: 1rem; }
-    .tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 2.5rem; }
-    @media (max-width: 760px) { .tool-grid { grid-template-columns: 1fr; } }
+    .tool-grid { display: grid; grid-template-columns: 1fr; max-width: 760px; margin-top: 2.5rem; }
     .tool-tile {
       display: flex; flex-direction: column; gap: 1rem;
       border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px;
@@ -42,62 +53,18 @@
     .tool-meta { font-size: 0.82rem; color: var(--text-grey); }
     .tool-tile .btn { align-self: flex-start; }
     .logout { background: none; border: none; cursor: pointer; font: inherit; }
-
-    /* --- Mes consultations --- */
-    .consult-section { background: var(--off-white); }
-    .consult-section h2.titre-section { font-size: clamp(1.8rem, 3.5vw, 2.4rem); margin-bottom: 0.4rem; }
-    .consult-intro { color: var(--text-grey); font-size: 0.95rem; margin-bottom: 2rem; max-width: 720px; }
-    .consult-card {
-      background: #fff; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px;
-      margin-bottom: 1.2rem; overflow: hidden;
-    }
-    .consult-card summary {
-      list-style: none; cursor: pointer; padding: 1.4rem 1.6rem;
-      display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; align-items: baseline;
-    }
-    .consult-card summary::-webkit-details-marker { display: none; }
-    .consult-card summary:hover { background: rgba(106, 20, 0, 0.03); }
-    .consult-titre { font-family: var(--font-heading); font-size: 1.25rem; flex: 1 1 100%; }
-    .consult-meta { font-size: 0.82rem; color: var(--text-grey); }
-    .consult-badge {
-      font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-      background: rgba(106, 20, 0, 0.1); color: var(--accent);
-      padding: 0.2rem 0.6rem; border-radius: 4px;
-    }
-    .consult-chevron { margin-left: auto; color: var(--accent); transition: transform 0.2s ease; font-size: 0.8rem; }
-    .consult-card[open] .consult-chevron { transform: rotate(180deg); }
-    .consult-corps { padding: 0 1.6rem 1.6rem; border-top: 1px solid rgba(0, 0, 0, 0.08); }
-    .consult-resume {
-      font-size: 0.92rem; color: var(--text-grey);
-      background: rgba(106, 20, 0, 0.04); border-left: 3px solid var(--accent);
-      padding: 0.9rem 1.1rem; border-radius: 0 4px 4px 0; margin: 1.2rem 0 1.4rem;
-    }
-    .consult-transcript h4 {
-      font-family: var(--font-body); font-size: 0.75rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-grey);
-      margin-bottom: 0.9rem;
-    }
-    .tour { display: grid; grid-template-columns: 170px 1fr; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 0.92rem; }
-    .tour:last-child { border-bottom: none; }
-    .tour .qui { font-weight: 700; color: var(--accent); }
-    .tour .texte { color: var(--text-dark); }
-    @media (max-width: 640px) { .tour { grid-template-columns: 1fr; gap: 0.2rem; } }
-    .consult-vide {
-      background: #fff; border: 1px dashed rgba(0, 0, 0, 0.25); border-radius: 8px;
-      padding: 2rem; text-align: center; color: var(--text-grey); font-size: 0.95rem;
-    }
   </style>
 </head>
 <body>
 
   <header class="site-header" id="top">
     <div class="container header-inner">
-      <a href="../fr/index.html" class="logo" aria-label="Archi Aid — accueil">
+      <a href="../fr/index.html" class="logo" id="logo-link" aria-label="Archi Aid">
         <img src="../assets/img/logo.png" alt="Archi Aid">
       </a>
       <nav class="main-nav" aria-label="Navigation">
-        <a href="../fr/index.html">Retour au site</a>
-        <a href="#" class="lang-switch logout" id="logout">Se déconnecter</a>
+        <a href="../fr/index.html" id="back-link" data-i18n="back">Retour au site</a>
+        <a href="#" class="lang-switch logout" id="logout" data-i18n="logout">Se déconnecter</a>
       </nav>
     </div>
   </header>
@@ -105,7 +72,7 @@
   <main>
     <section class="tools-hero">
       <div class="container">
-        <h1>Mes outils</h1>
+        <h1 data-i18n="title">Mes outils</h1>
         <p id="bienvenue">Bienvenue! Choisissez un outil, répondez aux énoncés, puis téléchargez votre rapport en PDF.</p>
       </div>
     </section>
@@ -114,130 +81,82 @@
       <div class="container">
         <div class="tool-grid">
           <article class="tool-tile">
-            <span class="tool-badge">Diagnostic</span>
-            <h2>Diagnostic de maturité numérique</h2>
-            <p>
+            <span class="tool-badge" data-i18n="badge">Diagnostic</span>
+            <h2 data-i18n="toolTitle">Diagnostic de maturité numérique</h2>
+            <p data-i18n="toolText">
               Douze énoncés, environ trois minutes. Votre situation est lue sur trois axes
               (gestion opérationnelle, intégration de l'IA, maturité BIM) et sous quatre
               angles : état de fait, processus, circulation de la donnée et position
               concurrentielle. Les énoncés s'adaptent à votre type d'activité.
             </p>
-            <span class="tool-meta">12 énoncés · ~3 minutes · rapport PDF</span>
-            <a href="diagnostic.html" class="btn">Ouvrir l'outil</a>
-          </article>
-
-          <article class="tool-tile">
-            <span class="tool-badge">Matrice</span>
-            <h2>Matrice de priorisation</h2>
-            <p>
-              Trente et un énoncés pour établir ce qui compte vraiment dans la sélection
-              d'une plateforme : points de rupture, exigences de base, tensions à trancher
-              et poids de chaque thème dans la note finale des fournisseurs rencontrés.
-            </p>
-            <span class="tool-meta">31 énoncés · ~10 minutes · rapport PDF</span>
-            <a href="matrice.html" class="btn">Ouvrir l'outil</a>
+            <span class="tool-meta" data-i18n="toolMeta">12 énoncés · ~3 minutes · rapport PDF</span>
+            <a href="diagnostic.html" class="btn" id="tool-link" data-i18n="open">Ouvrir l'outil</a>
           </article>
         </div>
-      </div>
-    </section>
-
-    <section class="section consult-section" id="consultations">
-      <div class="container">
-        <h2 class="titre-section">Mes consultations</h2>
-        <p class="consult-intro">
-          Le compte rendu de vos rencontres avec Archi Aid : résumé, participants et
-          transcript complet. Cliquez sur une rencontre pour l'ouvrir.
-        </p>
-        <div id="consult-liste"></div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-bottom">
-      <p>© <span id="year"></span> Solutions Archi Aid. Tous droits réservés.</p>
+      <p>© <span id="year"></span> <span data-i18n="copyright">Solutions Archi Aid. Tous droits réservés.</span></p>
     </div>
   </footer>
 
   <script>
+    var TEXTS = {
+      fr: {
+        pageTitle: "Mes outils — Archi Aid",
+        back: "Retour au site",
+        logout: "Se déconnecter",
+        title: "Mes outils",
+        welcome: "Bienvenue{name}! Choisissez un outil, répondez aux énoncés, puis téléchargez votre rapport en PDF.",
+        badge: "Diagnostic",
+        toolTitle: "Diagnostic de maturité numérique",
+        toolText: "Douze énoncés, environ trois minutes. Votre situation est lue sur trois axes (gestion opérationnelle, intégration de l'IA, maturité BIM) et sous quatre angles : état de fait, processus, circulation de la donnée et position concurrentielle. Les énoncés s'adaptent à votre type d'activité.",
+        toolMeta: "12 énoncés · ~3 minutes · rapport PDF",
+        open: "Ouvrir l'outil",
+        copyright: "Solutions Archi Aid. Tous droits réservés."
+      },
+      en: {
+        pageTitle: "My Tools — Archi Aid",
+        back: "Back to site",
+        logout: "Log out",
+        title: "My Tools",
+        welcome: "Welcome{name}! Choose a tool, answer the statements, then download your report as a PDF.",
+        badge: "Assessment",
+        toolTitle: "Digital Maturity Assessment",
+        toolText: "Twelve statements, about three minutes. Your situation is read across three axes (operational management, AI integration, BIM maturity) and from four angles: current state, processes, data flow and competitive position. The statements adapt to your type of business.",
+        toolMeta: "12 statements · ~3 minutes · PDF report",
+        open: "Open the tool",
+        copyright: "Solutions Archi Aid. All rights reserved."
+      }
+    };
+    var t = TEXTS[LANG];
+
+    document.title = t.pageTitle;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t[el.getAttribute("data-i18n")];
+    });
+    document.getElementById("logo-link").href = SITE_HOME;
+    document.getElementById("back-link").href = SITE_HOME;
+    document.getElementById("tool-link").href = "diagnostic.html?lang=" + LANG;
+
     var yearEl = document.getElementById("year");
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+    var nom = "";
     try {
       var utilisateur = JSON.parse(localStorage.getItem("archiaid_user") || "null");
-      if (utilisateur && utilisateur.nom) {
-        document.getElementById("bienvenue").textContent =
-          "Bienvenue, " + utilisateur.nom + "! Choisissez un outil, répondez aux énoncés, puis téléchargez votre rapport en PDF.";
-      }
+      if (utilisateur && utilisateur.nom) nom = ", " + utilisateur.nom;
     } catch (e) {}
+    document.getElementById("bienvenue").textContent = t.welcome.replace("{name}", nom);
 
     document.getElementById("logout").addEventListener("click", function (e) {
       e.preventDefault();
       try { localStorage.removeItem("archiaid_user"); } catch (err) {}
-      window.location.href = "../fr/index.html";
+      window.location.href = SITE_HOME;
     });
-  </script>
-  <script src="consultations-data.js"></script>
-  <script>
-    // Affiche les rencontres du client connecté (par courriel),
-    // plus celles marquées `exemple` visibles par tout le monde.
-    (function () {
-      var conteneur = document.getElementById("consult-liste");
-      var courriel = "";
-      try {
-        var u = JSON.parse(localStorage.getItem("archiaid_user") || "null");
-        if (u && u.courriel) courriel = u.courriel.trim().toLowerCase();
-      } catch (e) {}
-
-      var liste = (typeof CONSULTATIONS !== "undefined" ? CONSULTATIONS : []).filter(function (c) {
-        return c.exemple || (c.courriel || "").toLowerCase() === courriel;
-      });
-
-      if (!liste.length) {
-        conteneur.innerHTML = '<div class="consult-vide">Aucune consultation enregistrée pour ce compte pour l\'instant.<br>' +
-          'Vos comptes rendus apparaîtront ici après votre première rencontre avec Archi Aid.</div>';
-        return;
-      }
-
-      function texteSecurise(s) {
-        var d = document.createElement("div");
-        d.textContent = s == null ? "" : String(s);
-        return d.innerHTML;
-      }
-
-      function dateLisible(iso) {
-        try {
-          return new Date(iso + "T12:00:00").toLocaleDateString("fr-CA", {
-            year: "numeric", month: "long", day: "numeric"
-          });
-        } catch (e) { return iso; }
-      }
-
-      liste.sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
-
-      conteneur.innerHTML = liste.map(function (c) {
-        var estExemple = c.exemple && (c.courriel || "").toLowerCase() !== courriel;
-        return '<details class="consult-card">' +
-          '<summary>' +
-            '<span class="consult-titre">' + texteSecurise(c.titre) +
-              (estExemple ? ' <span class="consult-badge">Exemple</span>' : '') + '</span>' +
-            '<span class="consult-meta">' + dateLisible(c.date) + '</span>' +
-            '<span class="consult-meta">' + texteSecurise(c.duree) + '</span>' +
-            '<span class="consult-meta">' + texteSecurise((c.participants || []).join(" · ")) + '</span>' +
-            '<span class="consult-chevron">▼</span>' +
-          '</summary>' +
-          '<div class="consult-corps">' +
-            '<div class="consult-resume">' + texteSecurise(c.resume) + '</div>' +
-            '<div class="consult-transcript"><h4>Transcript</h4>' +
-              (c.transcript || []).map(function (t) {
-                return '<div class="tour"><span class="qui">' + texteSecurise(t.qui) +
-                       '</span><span class="texte">' + texteSecurise(t.texte) + '</span></div>';
-              }).join("") +
-            '</div>' +
-          '</div>' +
-        '</details>';
-      }).join("");
-    })();
   </script>
 </body>
 </html>

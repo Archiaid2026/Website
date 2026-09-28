@@ -70,6 +70,8 @@ if (modalOverlay) {
       var nameInput = form.querySelector('input[name="name"]');
       var emailInput = form.querySelector('input[name="email"]');
       try {
+        // La page des outils s'ouvrira dans la langue du site où l'on se connecte
+        localStorage.setItem('archiaid_lang', (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? 'fr' : 'en');
         localStorage.setItem('archiaid_user', JSON.stringify({
           nom: nameInput ? nameInput.value.trim() : '',
           courriel: emailInput ? emailInput.value.trim() : '',
