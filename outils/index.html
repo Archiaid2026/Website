@@ -31,6 +31,9 @@
     } catch (e) {}
   </script>
   <style>
+    /* Pied de page collé en bas même quand le contenu est court */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    main { flex: 1; }
     .tools-hero { background: var(--hero-bg); padding-block: 3rem 2.5rem; }
     .tools-hero h1 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.6rem; }
     .tools-hero p { color: var(--text-grey); font-size: 1rem; }
