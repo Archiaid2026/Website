@@ -401,7 +401,7 @@ function scoreSur100(m){ return Math.round((m - 1) / 4 * 100); }
 /* ==========================================================================
    5. ÉTAT
    ========================================================================== */
-let etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null };
+let etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null, lecture:false };
 
 const scene = document.getElementById("scene");
 const barre = document.getElementById("barre");
@@ -578,7 +578,37 @@ function detailReponses(){
 }
 
 /* ==========================================================================
-   8. CONTACT ET ENVOI HUBSPOT
+   8. LIEN DES RÉSULTATS
+   Les réponses tiennent dans l'adresse (?r=langue.activité.taille.réponses) :
+   le diagnostic les relit et réaffiche le rapport, sans serveur. C'est ce lien
+   que HubSpot met dans le courriel envoyé au contact.
+   ========================================================================== */
+function lienResultats(){
+  const reponses = liste().map(c => etat.reponses[c.cle] || 0).join("");
+  const code = [LANG, etat.categorie, etat.taille, reponses].join(".");
+  const base = location.protocol.startsWith("http") ? location.origin + location.pathname : "https://www.archiaid.ca/outils/diagnostic.html";
+  return base + "?r=" + code;
+}
+function restaurerDepuisLien(code){
+  const parts = (code || "").split(".");
+  if(parts.length !== 4) return false;
+  const [langue, cat, taille, reponses] = parts;
+  if(!CATEGORIES.some(c => c.valeur === cat) || !TAILLES.some(x => x.valeur === taille)) return false;
+  LANG = langue === "en" ? "en" : "fr";
+  etat.categorie = cat; etat.taille = taille; etat.reponses = {};
+  const items = liste();
+  if(!/^[1-5]+$/.test(reponses) || reponses.length !== items.length) return false;
+  items.forEach((c, i) => { etat.reponses[c.cle] = Number(reponses[i]); });
+  etat.lecture = true;                       // rapport consulté depuis le lien : pas de nouvel envoi
+  appliquerLangue();
+  calculer();
+  progression(100, t(UI.termine));
+  ecranResultats();
+  return true;
+}
+
+/* ==========================================================================
+   9. CONTACT ET ENVOI HUBSPOT
    ========================================================================== */
 function contactConnecte(){
   let contact = { prenom:"", nom:"", entreprise:"", courriel:"" };
@@ -690,6 +720,8 @@ function champsHubSpot(contact){
     champs.push({ name:a.cle + "_score", value:String(a.score) });
     a.sections.forEach(s => champs.push({ name:s.cle + "_score", value:String(s.score) }));
   });
+  champs.push({ name:"assessment_link",     value:lienResultats() });
+  champs.push({ name:"assessment_language", value:LANG });
   return champs.filter(c => c.value !== "" && c.value != null);
 }
 
@@ -715,9 +747,17 @@ async function envoyerHubSpot(contact){
   try {
     await soumettre(tous);
   } catch(e){
-    console.warn("Soumission complète refusée, nouvelle tentative avec les champs de base. Vérifiez que toutes les propriétés sont sur le formulaire.", e);
-    const base = ["email","firstname","lastname","company"];
-    await soumettre(tous.filter(c => base.includes(c.name)));
+    // HubSpot rejette toute la soumission si un champ manque au formulaire.
+    // 1er repli : sans le lien et la langue (propriétés récentes) ; 2e repli : contact seul.
+    console.warn("Soumission complète refusée. Vérifiez que assessment_link et assessment_language sont sur le formulaire.", e);
+    const optionnels = ["assessment_link","assessment_language"];
+    try {
+      await soumettre(tous.filter(c => !optionnels.includes(c.name)));
+    } catch(e2){
+      console.warn("Nouvelle tentative avec les champs de base seulement.", e2);
+      const base = ["email","firstname","lastname","company"];
+      await soumettre(tous.filter(c => base.includes(c.name)));
+    }
   }
 }
 
@@ -762,21 +802,28 @@ function ecranResultats(){
     <h3 class="titre-details">${t(UI.details)}</h3>
     ${blocs}
 
-    ${messageEnvoi()}
+    ${etat.lecture ? "" : messageEnvoi()}
     <div class="boutons" data-html2canvas-ignore>
-      <button class="primaire" id="envoyer" ${etat.envoye === "ok" ? "disabled" : ""}>${etat.envoye === "ok" ? t(UI.envoye) : t(UI.envoyer)}</button>
+      ${etat.lecture ? "" : `<button class="primaire" id="envoyer" ${etat.envoye === "ok" ? "disabled" : ""}>${etat.envoye === "ok" ? t(UI.envoye) : t(UI.envoyer)}</button>`}
       <button class="discret" id="refaire">${t(UI.refaire)}</button>
     </div>
   `;
 
-  document.getElementById("envoyer").onclick = (e) => envoyerResultats(e.currentTarget);
+  const boutonEnvoyer = document.getElementById("envoyer");
+  if(boutonEnvoyer) boutonEnvoyer.onclick = (e) => envoyerResultats(e.currentTarget);
   document.getElementById("refaire").onclick = () => {
     etat = { categorie:null, taille:null, reponses:{}, index:0, resultat:null, envoye:null };
+    if(location.search) history.replaceState(null, "", location.pathname);
     ecranLangue();
   };
 }
 
-ecranLangue();
+/* Point d'entrée : un lien de résultats réaffiche le rapport, sinon le choix de la langue */
+(function(){
+  let code = null;
+  try { code = new URLSearchParams(location.search).get("r"); } catch(e){}
+  if(!(code && restaurerDepuisLien(code))) ecranLangue();
+})();
 
 /* ==========================================================================
    10. INTÉGRATION EN IFRAME
