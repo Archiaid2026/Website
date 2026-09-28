@@ -10,7 +10,7 @@
     --brun:#241B19;
     --acier:#2D4A6B;
     --terracotta:#AF7E7B;
-    --sarcelle:#2E6F6B;
+    --sarcelle:#2E6F6B;--ocre:#8A5A2B;
     --fond:#FBF9F7;
     --carte:#FFFFFF;
     --trait:#E4DCD7;
@@ -39,6 +39,7 @@
   .axe-etiquette{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:5px 10px;border-radius:4px;margin-bottom:16px}
   .axe-operationnel{background:#EDF1F6;color:var(--acier)}
   .axe-ia{background:#E9F2F1;color:var(--sarcelle)}
+  .axe-numerique{background:#F5EFE8;color:var(--ocre)}
   .axe-bim{background:#F6EDEB;color:var(--rouille)}
 
   .enonce{font-size:20px;line-height:1.45;font-weight:600;margin-bottom:26px}
@@ -86,7 +87,7 @@
   .matrice{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}
   .matrice th,.matrice td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--trait);vertical-align:top}
   .matrice thead th{border-bottom:2px solid var(--brun);font-size:13px}
-  .matrice tbody th{font-weight:400;color:var(--texte-doux);width:30%}
+  .matrice tbody th{font-weight:400;color:var(--texte-doux);width:22%}
   .matrice td{font-weight:700;color:var(--brun)}
   .matrice td.col-prio{color:var(--rouille);background:#FCF6F4}
   .col-axe{display:block;font-weight:700}
@@ -158,14 +159,16 @@ const TAILLES = [
 
 /* ==========================================================================
    3. LES TROIS AXES ET LES QUATRE LECTURES
-   Le questionnaire est une matrice : 3 axes x 4 lectures = 12 énoncés.
+   Le questionnaire est une matrice : 4 axes x 4 lectures = 16 énoncés.
    Chaque énoncé appartient à un axe ET à une lecture, ce qui rend les deux
    dimensions indépendantes. Un axe se lit en colonne (4 énoncés, 4 à 20),
-   une lecture se lit en ligne (3 énoncés, 3 à 15).
+   une lecture se lit en ligne (4 énoncés, 4 à 20).
    ========================================================================== */
 const AXES = [
   { cle:"entreprise", libelle:"Gestion opérationnelle", couleur:"var(--acier)",   classe:"axe-operationnel",
     conseil:"Structurer la visibilité sur vos projets et relier vos systèmes entre eux." },
+  { cle:"numerique",  libelle:"Transformation numérique", couleur:"var(--ocre)", classe:"axe-numerique",
+    conseil:"Centraliser vos systèmes et encadrer l'adoption des outils à l'échelle de l'entreprise." },
   { cle:"ia",         libelle:"Intégration de l'IA",    couleur:"var(--sarcelle)",classe:"axe-ia",
     conseil:"Encadrer l'usage des outils d'IA et cibler les tâches où le gain est mesurable." },
   { cle:"bim",        libelle:"Maturité BIM",           couleur:"var(--rouille)", classe:"axe-bim",
@@ -198,6 +201,13 @@ const ENONCES_ENTREPRISE = {
   processus:"Nos façons de faire sont documentées et appliquées de la même manière d'un projet à l'autre.",
   donnee:"Nos outils sont reliés entre eux : une même information n'a pas à être ressaisie à plusieurs endroits.",
   position:"Nous répondons aux exigences de suivi et de reddition de comptes de nos clients sans mobiliser d'effort exceptionnel."
+};
+
+const ENONCES_NUMERIQUE = {
+  etat_de_fait:"Nos équipes travaillent dans des plateformes communes à l'entreprise plutôt que dans des outils choisis individuellement (fichiers locaux, courriels, applications personnelles).",
+  processus:"L'adoption d'un nouvel outil suit une démarche définie : besoin, choix, déploiement, formation, puis mesure des résultats.",
+  donnee:"Chaque information a un système de référence unique : il n'existe pas plusieurs versions du même échéancier, du même budget ou du même plan.",
+  position:"Nos outils numériques sont un argument auprès de nos clients et partenaires, pas un rattrapage par rapport à eux."
 };
 
 const ENONCES_IA = {
@@ -329,10 +339,11 @@ function famille(){
 }
 function libelleAxe(axe){ return axe.cle === "bim" ? LIBELLE_BIM_PAR_FAMILLE[famille()] : axe.libelle; }
 
-/* La grille : 12 cases, parcourues axe par axe, lecture par lecture. */
+/* La grille : 16 cases, parcourues axe par axe, lecture par lecture. */
 function grille(){
   const source = {
     entreprise:ENONCES_ENTREPRISE,
+    numerique:ENONCES_NUMERIQUE,
     ia:ENONCES_IA,
     bim:ENONCES_BIM[famille()]
   };
@@ -358,8 +369,8 @@ function ecranAccueil(){
   progression(null);
   scene.innerHTML = `
     <h1>Où en est votre organisation dans sa transformation numérique ?</h1>
-    <p class="plein">Douze énoncés, environ trois minutes. Pour chacun, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
-    <p>Votre situation est ensuite lue sur trois axes (gestion opérationnelle, intégration de l'IA, maturité BIM) et sous quatre angles : état de fait, maturité de processus, circulation de la donnée, position concurrentielle. Les énoncés sur le BIM s'adaptent au type d'activité que vous exercez.</p>
+    <p class="plein">Seize énoncés, environ quatre minutes. Pour chacun, vous indiquez à quel point il décrit votre réalité, de 1 à 5.</p>
+    <p>Votre situation est ensuite lue sur quatre axes (gestion opérationnelle, transformation numérique, intégration de l'IA, maturité BIM) et sous quatre angles : état de fait, maturité de processus, circulation de la donnée, position concurrentielle. Les énoncés sur le BIM s'adaptent au type d'activité que vous exercez.</p>
     <div class="boutons"><button class="primaire" id="go">Commencer</button></div>
   `;
   document.getElementById("go").onclick = ecranProfil;
@@ -407,7 +418,7 @@ function ecranEnonce(){
   const c = cases[etat.index];
   const axe = AXES.find(a => a.cle === c.axe);
   const lecture = LECTURES.find(l => l.cle === c.lecture);
-  progression(Math.round((etat.index / 12) * 100), `Énoncé ${etat.index + 1} sur 12`);
+  progression(Math.round((etat.index / cases.length) * 100), `Énoncé ${etat.index + 1} sur ${cases.length}`);
 
   scene.innerHTML = `
     <span class="axe-etiquette ${axe.classe}">${libelleAxe(axe)} · ${lecture.libelle}</span>
@@ -427,7 +438,7 @@ function ecranEnonce(){
   scene.querySelectorAll(".cran").forEach(el => {
     el.onclick = () => {
       etat.reponses[c.cle] = parseInt(el.dataset.note, 10);
-      if(etat.index < 11){ etat.index++; ecranEnonce(); }
+      if(etat.index < cases.length - 1){ etat.index++; ecranEnonce(); }
       else { calculer(); finaliser(); }
     };
   });
@@ -448,17 +459,17 @@ function calculer(){
   const parAxe = {}, rangAxe = {};
   AXES.forEach(a => {
     parAxe[a.cle] = LECTURES.reduce((t,l) => t + note(a.cle, l.cle), 0);   // 4 à 20
-    rangAxe[a.cle] = rangDeScore(parAxe[a.cle], 4);
+    rangAxe[a.cle] = rangDeScore(parAxe[a.cle], LECTURES.length);
   });
 
   const parLecture = {}, rangLecture = {};
   LECTURES.forEach(l => {
     parLecture[l.cle] = AXES.reduce((t,a) => t + note(a.cle, l.cle), 0);   // 3 à 15
-    rangLecture[l.cle] = rangDeScore(parLecture[l.cle], 3);
+    rangLecture[l.cle] = rangDeScore(parLecture[l.cle], AXES.length);
   });
 
-  const global = AXES.reduce((t,a) => t + parAxe[a.cle], 0);               // 12 à 60
-  const palier = PALIERS[rangDeScore(global, 12)];
+  const global = AXES.reduce((t,a) => t + parAxe[a.cle], 0);               // 16 à 80
+  const palier = PALIERS[rangDeScore(global, AXES.length * LECTURES.length)];
   const angle  = AXES.map(a => a.cle).sort((x,y) => parAxe[x] - parAxe[y])[0];
   const angleLecture = LECTURES.map(l => l.cle).sort((x,y) => parLecture[x] - parLecture[y])[0];
 
@@ -472,14 +483,14 @@ function detailReponses(){
   const lignes = [
     `Catégorie : ${cat ? cat.libelle : "n/d"}`,
     `Taille : ${tai ? tai.libelle : "n/d"}`,
-    `Échelle : accord de 1 à 5. Grille 3 axes x 4 lectures.`,
+    `Échelle : accord de 1 à 5. Grille 4 axes x 4 lectures.`,
     ""
   ];
   if(r){
-    lignes.push(`Score global : ${r.global}/60`);
+    lignes.push(`Score global : ${r.global}/${AXES.length * LECTURES.length * 5}`);
     lignes.push("");
     lignes.push("Lecture par dimension");
-    LECTURES.forEach(l => lignes.push(`   ${l.libelle} (${r.parLecture[l.cle]}/15) : ${VERDICTS[l.cle][r.rangLecture[l.cle]].libelle}`));
+    LECTURES.forEach(l => lignes.push(`   ${l.libelle} (${r.parLecture[l.cle]}/${AXES.length * 5}) : ${VERDICTS[l.cle][r.rangLecture[l.cle]].libelle}`));
     lignes.push("");
     lignes.push("Lecture par axe");
     AXES.forEach(a => lignes.push(`   ${libelleAxe(a)} (${r.parAxe[a.cle]}/20) : ${VERDICTS.etat_de_fait[r.rangAxe[a.cle]].libelle}`));
@@ -523,7 +534,7 @@ function ecranGate(){
   progression(100, "Terminé");
   scene.innerHTML = `
     <h2>Votre lecture est prête</h2>
-    <p>Indiquez où vous joindre et vous verrez votre situation lue sous quatre angles, pour chacun des trois axes, avec celui à prioriser.</p>
+    <p>Indiquez où vous joindre et vous verrez votre situation lue sous quatre angles, pour chacun des quatre axes, avec celui à prioriser.</p>
     <label class="champ" for="prenom">Prénom</label>
     <input type="text" id="prenom" autocomplete="given-name">
     <label class="champ" for="nom">Nom</label>
@@ -636,7 +647,7 @@ function ecranResultats(){
           <span class="lecture-cle">${l.libelle}</span>
           <span class="lecture-val">${v.libelle}</span>
         </div>
-        <div class="lecture-note">${l.question} &nbsp;·&nbsp; ${r.parLecture[l.cle]} / 15</div>
+        <div class="lecture-note">${l.question} &nbsp;·&nbsp; ${r.parLecture[l.cle]} / ${AXES.length * 5}</div>
         <p class="lecture-texte">${v.texte}</p>
       </div>`;
   }).join("");
@@ -671,14 +682,14 @@ function ecranResultats(){
     </div>`).join("");
 
   scene.innerHTML = `
-    <div class="score-bloc"><div class="score-chiffre">${r.global}<span class="score-sur"> / 60</span></div></div>
+    <div class="score-bloc"><div class="score-chiffre">${r.global}<span class="score-sur"> / ${AXES.length * LECTURES.length * 5}</span></div></div>
 
     <h3>Votre situation, sous quatre angles</h3>
     <p>Chaque angle est calculé sur des énoncés différents. Il est normal qu'ils ne se situent pas au même niveau : c'est précisément l'écart entre eux qui indique par où commencer.</p>
     ${dimensions}
 
     <h3 style="margin-top:34px">La grille complète</h3>
-    <p>Croisement des quatre angles et des trois axes. La colonne mise en évidence est celle où votre score est le plus faible.</p>
+    <p>Croisement des quatre angles et des quatre axes. La colonne mise en évidence est celle où votre score est le plus faible.</p>
     <div class="vue-large">${matrice}</div>
     <div class="vue-etroite">${blocsMobile}</div>
 
