@@ -479,7 +479,7 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
   function scrollToY(target) {
     var start = window.scrollY, delta = target - start;
     if (Math.abs(delta) < 2) return;
-    var duration = Math.min(900, 450 + Math.abs(delta) * 0.35);
+    var duration = Math.min(520, 220 + Math.abs(delta) * 0.28);
     var t0 = null;
     animating = true;
     document.documentElement.style.scrollBehavior = 'auto';
@@ -492,7 +492,7 @@ document.querySelectorAll('.infographic[data-infographic]').forEach(buildInfogra
       } else {
         document.documentElement.style.scrollBehavior = '';
         // petite pause pour absorber l'inertie du trackpad
-        setTimeout(function () { animating = false; }, 120);
+        setTimeout(function () { animating = false; }, 70);
       }
     }
     requestAnimationFrame(frame);
