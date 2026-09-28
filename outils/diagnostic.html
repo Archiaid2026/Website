@@ -141,13 +141,11 @@ const CONFIG = {
    2. PROFIL DE L'ORGANISATION (non noté)
    ========================================================================== */
 const CATEGORIES = [
-  { valeur:"promoteur",              libelle:"Développement immobilier / Promoteur",               famille:"donneur_ouvrage" },
-  { valeur:"architecture",           libelle:"Architecture",                                        famille:"conception" },
-  { valeur:"ingenierie",             libelle:"Ingénierie (structure, civil, mécanique, électrique)",famille:"conception" },
-  { valeur:"entrepreneur_general",   libelle:"Entrepreneur général / Gestion de construction",      famille:"realisation" },
-  { valeur:"entrepreneur_specialise",libelle:"Entrepreneur spécialisé / Sous-traitant",             famille:"realisation" },
-  { valeur:"gestion_projet",         libelle:"Gestion de projet pour donneur d'ouvrage",            famille:"donneur_ouvrage" },
-  { valeur:"proprietaire_exploitant",libelle:"Propriétaire-exploitant / Gestion immobilière",       famille:"exploitation" }
+  { valeur:"promoteur",            libelle:"Développement immobilier / Promoteur",                 famille:"donneur_ouvrage" },
+  { valeur:"architecture",         libelle:"Architecture",                                          famille:"conception" },
+  { valeur:"ingenierie",           libelle:"Ingénierie (structure, civil, mécanique, électrique)",  famille:"conception" },
+  { valeur:"entrepreneur_general", libelle:"Entrepreneur général / Gestion de construction",        famille:"realisation" },
+  { valeur:"autre",                libelle:"Autre",                                                 famille:"autre" }
 ];
 
 const TAILLES = [
@@ -228,6 +226,12 @@ const ENONCES_BIM = {
     donnee:"Les données du projet sont transférées vers nos systèmes d'exploitation à la réception du bâtiment.",
     position:"Nos exigences numériques soutiennent la comparaison avec celles des donneurs d'ouvrage les plus avancés de notre marché."
   },
+  autre:{
+    etat_de_fait:"La maquette numérique (BIM) est utilisée dans nos projets courants, pas seulement à l'essai.",
+    processus:"Nos exigences et nos livrables BIM sont définis par écrit au démarrage de chaque projet.",
+    donnee:"Les données issues de la maquette circulent vers nos autres outils sans ressaisie.",
+    position:"Notre maîtrise du BIM répond aux exigences de nos clients et partenaires les plus avancés."
+  },
   exploitation:{
     etat_de_fait:"La documentation de notre parc immobilier est tenue à jour et fiable après chaque intervention.",
     processus:"Nos contrats précisent les données numériques que doivent nous remettre concepteurs et entrepreneurs, et nous les vérifions.",
@@ -240,7 +244,8 @@ const LIBELLE_BIM_PAR_FAMILLE = {
   conception:"Maturité BIM en conception",
   realisation:"Maturité BIM en réalisation",
   donneur_ouvrage:"Maturité BIM comme donneur d'ouvrage",
-  exploitation:"Maturité des données d'actifs"
+  exploitation:"Maturité des données d'actifs",
+  autre:"Maturité BIM"
 };
 
 /* ==========================================================================
