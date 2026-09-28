@@ -31,13 +31,15 @@
     } catch (e) {}
   </script>
   <style>
-    /* Pied de page collé en bas même quand le contenu est court */
-    body { min-height: 100vh; display: flex; flex-direction: column; }
-    main { flex: 1; }
-    .tools-hero { background: var(--hero-bg); padding-block: 3rem 2.5rem; }
+    /* La page tient dans la fenêtre : le pied de page est visible sans défiler.
+       Si le contenu dépasse (petit écran), c'est la zone principale qui défile. */
+    body { height: 100vh; display: flex; flex-direction: column; }
+    main { flex: 1; min-height: 0; overflow-y: auto; }
+    main .section { padding-block: clamp(1.5rem, 4vh, 3rem); min-height: 0; }
+    .tools-hero { background: var(--hero-bg); padding-block: clamp(1.5rem, 3.5vh, 2.5rem) clamp(1.2rem, 3vh, 2rem); }
     .tools-hero h1 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.6rem; }
     .tools-hero p { color: var(--text-grey); font-size: 1rem; }
-    .tool-grid { display: grid; grid-template-columns: 1fr; max-width: 760px; margin-top: 2.5rem; }
+    .tool-grid { display: grid; grid-template-columns: 1fr; max-width: 760px; margin-top: 0; }
     .tool-tile {
       display: flex; flex-direction: column; gap: 1rem;
       border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px;
