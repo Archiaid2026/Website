@@ -633,16 +633,17 @@ function finaliser(){
 async function envoyerResultats(bouton){
   const contact = contactConnecte();
   if(!contact.courriel){ ecranGate(); return; }
-  bouton.disabled = true;
-  bouton.textContent = t(UI.envoiEnCours);
+  // Confirmation immédiate ; l'envoi se poursuit en arrière-plan.
+  // Si HubSpot refuse, le message devient une erreur et le bouton est réactivé.
+  etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
+  ecranResultats();
   try {
     await envoyerHubSpot(contact);
-    etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
   } catch(e){
     etat.envoye = "echec";
     console.error("Envoi HubSpot échoué :", e);
+    ecranResultats();
   }
-  ecranResultats();
 }
 
 function messageEnvoi(){
@@ -692,15 +693,16 @@ function ecranGate(){
       entreprise:document.getElementById("entreprise").value.trim(),
       courriel:document.getElementById("courriel").value.trim()
     };
-    try { localStorage.setItem("archiaid_user", JSON.stringify({ nom:(contact.prenom + " " + contact.nom).trim(), courriel:contact.courriel })); } catch(e){}
+    try { localStorage.setItem("archiaid_user", JSON.stringify({ prenom:contact.prenom, famille:contact.nom, entreprise:contact.entreprise, nom:(contact.prenom + " " + contact.nom).trim(), courriel:contact.courriel })); } catch(e){}
+    etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
+    ecranResultats();
     try {
       await envoyerHubSpot(contact);
-      etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
     } catch(e){
       etat.envoye = "echec";
       console.error("Envoi HubSpot échoué :", e);
+      ecranResultats();
     }
-    ecranResultats();
   };
 }
 
