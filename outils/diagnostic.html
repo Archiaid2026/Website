@@ -637,13 +637,23 @@ async function envoyerResultats(bouton){
   // Si HubSpot refuse, le message devient une erreur et le bouton est réactivé.
   etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
   ecranResultats();
+  const retour = planifierRetourAccueil();
   try {
     await envoyerHubSpot(contact);
   } catch(e){
+    clearTimeout(retour);
     etat.envoye = "echec";
     console.error("Envoi HubSpot échoué :", e);
     ecranResultats();
   }
+}
+
+/* Après l'envoi, retour à la page d'accueil du site, dans la langue du diagnostic.
+   Le délai laisse le temps de lire la confirmation ; l'envoi (keepalive) se termine
+   même si la page change. */
+function planifierRetourAccueil(){
+  const accueil = LANG === "en" ? "../" : "../fr/";
+  return setTimeout(() => { window.location.href = accueil; }, 2500);
 }
 
 function messageEnvoi(){
@@ -696,9 +706,11 @@ function ecranGate(){
     try { localStorage.setItem("archiaid_user", JSON.stringify({ prenom:contact.prenom, famille:contact.nom, entreprise:contact.entreprise, nom:(contact.prenom + " " + contact.nom).trim(), courriel:contact.courriel })); } catch(e){}
     etat.envoye = CONFIG.PORTAL_ID && CONFIG.FORM_GUID ? "ok" : "inactif";
     ecranResultats();
+    const retour = planifierRetourAccueil();
     try {
       await envoyerHubSpot(contact);
     } catch(e){
+      clearTimeout(retour);
       etat.envoye = "echec";
       console.error("Envoi HubSpot échoué :", e);
       ecranResultats();
@@ -736,7 +748,7 @@ async function envoyerHubSpot(contact){
   async function soumettre(champs){
     const reponse = await fetch(
       `https://${CONFIG.HSFORMS_HOST}/submissions/v3/integration/submit/${CONFIG.PORTAL_ID}/${CONFIG.FORM_GUID}`,
-      { method:"POST", headers:{ "Content-Type":"application/json" },
+      { method:"POST", headers:{ "Content-Type":"application/json" }, keepalive:true,
         body:JSON.stringify({
           fields:champs,
           context:{ pageUri:window.location.href, pageName:document.title },
