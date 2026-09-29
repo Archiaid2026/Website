@@ -253,14 +253,15 @@ var PROJECTS = {
   var list = PROJECTS[lang];
   var base = (lang === 'fr' ? '../' : '') + 'assets/img/projects/';
   var T = lang === 'fr'
-    ? { open: 'Voir le projet', close: 'Fermer' }
-    : { open: 'View project', close: 'Close' };
+    ? { open: 'Voir le projet', close: 'Fermer', details: 'Détails' }
+    : { open: 'View project', close: 'Close', details: 'Details' };
 
   // Une carte par projet, puis la même série une seconde fois pour un défilement sans coupure
   function carte(p) {
     return '<button type="button" class="project-card" data-project="' + p.key + '" aria-label="' + T.open + ' : ' + p.title + '">' +
       '<img src="' + base + p.img + '" alt="" loading="lazy">' +
       '<span class="project-text"><span class="project-kicker">' + p.kicker + '</span><span class="project-title">' + p.title + '</span></span>' +
+      '<span class="project-cta" aria-hidden="true">' + T.details + ' <span>&rarr;</span></span>' +
     '</button>';
   }
   host.innerHTML = '<div class="project-track">' + list.map(carte).join('') + list.map(carte).join('') + '</div>';
