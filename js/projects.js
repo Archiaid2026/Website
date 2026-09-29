@@ -264,7 +264,39 @@ var PROJECTS = {
       '<span class="project-cta" aria-hidden="true">' + T.details + ' <span>&rarr;</span></span>' +
     '</button>';
   }
-  host.innerHTML = '<div class="project-track">' + list.map(carte).join('') + list.map(carte).join('') + '</div>';
+  // Grand écran : la série deux fois, pour un défilement continu sans coupure.
+  // Mobile : la série une seule fois, une carte par écran, avancée automatique.
+  var mobile = window.matchMedia('(max-width: 680px)');
+  function construire() {
+    var serie = list.map(carte).join('');
+    host.innerHTML = '<div class="project-track">' + serie + (mobile.matches ? '' : serie) + '</div>';
+  }
+  construire();
+  if (mobile.addEventListener) mobile.addEventListener('change', construire);
+
+  // Mobile : passage à la carte suivante toutes les 4 s, en pause pendant qu'on touche l'écran
+  var minuterie = null, pauseTactile = null;
+  function carteVisible() {
+    var cards = host.querySelectorAll('.project-card');
+    var meilleure = 0, distance = Infinity, centre = host.scrollLeft + host.clientWidth / 2;
+    cards.forEach(function (c, i) {
+      var d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - centre);
+      if (d < distance) { distance = d; meilleure = i; }
+    });
+    return meilleure;
+  }
+  function suivante() {
+    if (!mobile.matches || document.body.classList.contains('modal-locked')) return;
+    var cards = host.querySelectorAll('.project-card');
+    if (!cards.length) return;
+    var i = (carteVisible() + 1) % cards.length;
+    var c = cards[i];
+    host.scrollTo({ left: c.offsetLeft - (host.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' });
+  }
+  function demarrer() { clearInterval(minuterie); minuterie = setInterval(suivante, 4000); }
+  host.addEventListener('touchstart', function () { clearInterval(minuterie); clearTimeout(pauseTactile); }, { passive: true });
+  host.addEventListener('touchend', function () { clearTimeout(pauseTactile); pauseTactile = setTimeout(demarrer, 6000); }, { passive: true });
+  demarrer();
 
   // Fenêtre de détail : texte à gauche, image à droite
   var overlay = document.createElement('div');

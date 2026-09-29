@@ -1050,9 +1050,26 @@ h3 { font-size: 1.5rem; }
   .project-modal-image { order: -1; }
   .project-modal .modal-close { background: rgba(255, 255, 255, 0.92); }
 }
+/* Mobile : une carte par écran, défilement par accrochage, avancée automatique (JS) */
 @media (max-width: 680px) {
-  .project-card { flex-basis: 78vw; }
-  .project-track { animation-duration: 70s; }
+  .project-marquee {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .project-marquee::-webkit-scrollbar { display: none; }
+  .project-track {
+    animation: none;
+    width: auto;
+    gap: 16px;
+    padding-inline: 16px;
+  }
+  .project-card {
+    flex: 0 0 calc(100vw - 32px);
+    max-height: none;
+    scroll-snap-align: center;
+  }
 }
 
 /* ---------- Pourquoi nous (photo + texte dans une seule fenêtre, sans défiler) ---------- */
