@@ -31,15 +31,10 @@ if (modalOverlay) {
 
   function openModal(e) {
     if (e) e.preventDefault();
-    // Visiteur déjà connu dans ce navigateur : on l'envoie directement aux outils
-    try {
-      var connu = JSON.parse(localStorage.getItem('archiaid_user') || 'null');
-      if (connu && connu.courriel) {
-        localStorage.setItem('archiaid_lang', (document.documentElement.lang || 'en').slice(0, 2) === 'fr' ? 'fr' : 'en');
-        window.location.href = modalOverlay.getAttribute('data-redirect');
-        return;
-      }
-    } catch (err) {}
+    // Appareil partagé (kiosque, salon) : chaque clic sur Outils repart d'une fiche vierge,
+    // même si quelqu'un vient de remplir le formulaire sur ce navigateur.
+    try { localStorage.removeItem('archiaid_user'); } catch (err) {}
+    modalOverlay.querySelectorAll('input').forEach(function (i) { i.value = ''; });
     modalOverlay.classList.add('open');
     document.body.classList.add('modal-locked');
     var firstInput = modalOverlay.querySelector('.modal-form.active input');
