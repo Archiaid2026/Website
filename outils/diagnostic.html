@@ -135,6 +135,17 @@
    résultat s'affiche quand même). À remplir avec le nouveau portail.
    ========================================================================== */
 const CONFIG = {
+  // Noms internes et valeurs internes des listes déroulantes telles qu'elles existent dans HubSpot
+  // (la propriété Company_size s'appelle « compay_size » dans HubSpot, coquille comprise).
+  HS_CATEGORIE : "diagnostic_categorie",
+  HS_TAILLE    : "compay_size",
+  HS_VALEURS_CATEGORIE : {
+    promoteur:"Real Estate Developer", architecture:"Architecture", ingenierie:"Engineering",
+    entrepreneur_general:"General Contractor", sous_traitant:"Subcontractor", autre:"Other"
+  },
+  HS_VALEURS_TAILLE : {
+    "1_9":"1_9", "10_49":"10_49", "50_199":"50_199", "200_499":"200_499", "500_ou_plus":"500_ou_plus"
+  },
   PORTAL_ID : "44586873",                                        // numéro du portail HubSpot (Hub ID)
   FORM_GUID : "96d0935d-17f2-4a95-aea6-9db15f235671",                                        // formulaire « Digital Maturity Assessment »
   HSFORMS_HOST : "api.hsforms.com"                         // api-eu1.hsforms.com pour un portail hébergé en Europe
@@ -727,8 +738,8 @@ function champsHubSpot(contact){
     { name:"firstname",        value:contact.prenom },
     { name:"lastname",         value:contact.nom },
     { name:"company",          value:contact.entreprise },
-    { name:"company_category", value:etat.categorie },
-    { name:"company_size",     value:etat.taille }
+    { name:CONFIG.HS_CATEGORIE, value:CONFIG.HS_VALEURS_CATEGORIE[etat.categorie] || etat.categorie },
+    { name:CONFIG.HS_TAILLE,    value:CONFIG.HS_VALEURS_TAILLE[etat.taille] || etat.taille }
   ];
   r.axes.forEach(a => {
     champs.push({ name:a.cle + "_score", value:String(a.score) });
