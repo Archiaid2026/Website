@@ -52,6 +52,12 @@ if (modalOverlay) {
   }
 
   openers.forEach(function (el) { el.addEventListener('click', openModal); });
+
+  // Adresse directe vers les outils (code QR, lien dans un courriel) : ?outils ou #outils
+  // ouvre la fenêtre d'accès dès le chargement, ou envoie aux outils si le visiteur est connu.
+  if (/[?&]outils(?=$|[=&])/.test(window.location.search) || window.location.hash === '#outils') {
+    setTimeout(function () { openModal(); }, 300);
+  }
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   modalOverlay.addEventListener('click', function (e) {
     if (e.target === modalOverlay) closeModal();
